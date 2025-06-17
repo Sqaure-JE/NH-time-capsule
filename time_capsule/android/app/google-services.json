@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "376477916722",
+    "project_id": "nhtimecapsule-2d310",
+    "storage_bucket": "nhtimecapsule-2d310.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:376477916722:android:9a345e5af4017a9848262b",
+        "android_client_info": {
+          "package_name": "com.nh.timecapsule"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBEu5yrPWEkHGSbOh_Y0p_LxOF6kM6Yk-w"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
