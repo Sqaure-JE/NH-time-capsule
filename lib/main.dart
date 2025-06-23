@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter/foundation.dart';
+import 'package:flutter_web_plugins/url_strategy.dart';
 import 'presentation/screens/home/home_screen.dart';
 import 'presentation/screens/create/create_screen.dart';
 import 'presentation/screens/create/capsule_create_screen.dart';
@@ -14,21 +16,28 @@ void main() async {
   // Flutter 바인딩 초기화
   WidgetsFlutterBinding.ensureInitialized();
 
-  // 시스템 UI 설정
-  SystemChrome.setSystemUIOverlayStyle(
-    const SystemUiOverlayStyle(
-      statusBarColor: Colors.transparent,
-      statusBarIconBrightness: Brightness.dark,
-      systemNavigationBarColor: Colors.white,
-      systemNavigationBarIconBrightness: Brightness.dark,
-    ),
-  );
+  // 웹에서 URL에서 # 제거 (해시 전략 비활성화)
+  if (kIsWeb) {
+    usePathUrlStrategy();
+  }
 
-  // 화면 방향 고정 (세로)
-  await SystemChrome.setPreferredOrientations([
-    DeviceOrientation.portraitUp,
-    DeviceOrientation.portraitDown,
-  ]);
+  // 시스템 UI 설정 (모바일 전용)
+  if (!kIsWeb) {
+    SystemChrome.setSystemUIOverlayStyle(
+      const SystemUiOverlayStyle(
+        statusBarColor: Colors.transparent,
+        statusBarIconBrightness: Brightness.dark,
+        systemNavigationBarColor: Colors.white,
+        systemNavigationBarIconBrightness: Brightness.dark,
+      ),
+    );
+
+    // 화면 방향 고정 (세로) - 모바일 전용
+    await SystemChrome.setPreferredOrientations([
+      DeviceOrientation.portraitUp,
+      DeviceOrientation.portraitDown,
+    ]);
+  }
 
   runApp(
     const TimeCapsuleApp(),
@@ -61,7 +70,12 @@ class TimeCapsuleApp extends StatelessWidget {
           // 텍스트 크기 고정 (사용자 설정 무시)
           data: MediaQuery.of(context)
               .copyWith(textScaler: const TextScaler.linear(1.0)),
-          child: child!,
+          child: kIsWeb
+              ? Container(
+                  constraints: const BoxConstraints(maxWidth: 1200),
+                  child: child!,
+                )
+              : child!,
         );
       },
     );

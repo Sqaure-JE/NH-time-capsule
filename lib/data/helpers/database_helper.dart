@@ -1,5 +1,6 @@
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
+import 'package:flutter/foundation.dart';
 import '../../models/capsule.dart';
 import '../../models/content.dart';
 
@@ -18,12 +19,22 @@ class DatabaseHelper {
   }
 
   Future<Database> _initDatabase() async {
-    final path = join(await getDatabasesPath(), 'time_capsule.db');
-    return await openDatabase(
-      path,
-      version: 1,
-      onCreate: _onCreate,
-    );
+    if (kIsWeb) {
+      // 웹에서는 in-memory 데이터베이스 사용
+      return await openDatabase(
+        inMemoryDatabasePath,
+        version: 1,
+        onCreate: _onCreate,
+      );
+    } else {
+      // 모바일에서는 기존 방식 사용
+      final path = join(await getDatabasesPath(), 'time_capsule.db');
+      return await openDatabase(
+        path,
+        version: 1,
+        onCreate: _onCreate,
+      );
+    }
   }
 
   Future<void> _onCreate(Database db, int version) async {
@@ -200,4 +211,4 @@ class DatabaseHelper {
       whereArgs: [id],
     );
   }
-} 
+}
