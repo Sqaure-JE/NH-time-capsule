@@ -1,11 +1,11 @@
 {
-    "name": "time_capsule",
-    "short_name": "time_capsule",
+    "name": "금융 타임캡슐",
+    "short_name": "타임캡슐",
     "start_url": ".",
     "display": "standalone",
-    "background_color": "#0175C2",
-    "theme_color": "#0175C2",
-    "description": "A new Flutter project.",
+    "background_color": "#4CAF50",
+    "theme_color": "#4CAF50",
+    "description": "NH 회원을 위한 금융 타임캡슐 앱",
     "orientation": "portrait-primary",
     "prefer_related_applications": false,
     "icons": [

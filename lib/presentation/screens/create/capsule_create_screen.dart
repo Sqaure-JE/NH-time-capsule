@@ -28,6 +28,14 @@ class _CapsuleCreateScreenState extends State<_CapsuleCreateScreen> {
   File? _firstMemoryImage;
   final _titleController = TextEditingController();
 
+  @override
+  void initState() {
+    super.initState();
+    _titleController.addListener(() {
+      setState(() {}); // 제목 변경 시 UI 업데이트
+    });
+  }
+
   void _onFirstMemoryImageChanged(File? file) {
     setState(() {
       _firstMemoryImage = file;
@@ -86,75 +94,8 @@ class _CapsuleCreateScreenState extends State<_CapsuleCreateScreen> {
       ),
       bottomNavigationBar: _NextButton(
         imageFile: _firstMemoryImage,
-        title: _titleController.text,
+        titleController: _titleController,
       ),
-    );
-  }
-}
-
-class _StepIndicator extends StatelessWidget {
-  const _StepIndicator();
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
-      child: Row(
-        children: [
-          const _StepCircle(active: true, label: '유형'),
-          _StepLine(),
-          const _StepCircle(active: false, label: '목적'),
-          _StepLine(),
-          const _StepCircle(active: false, label: '기간'),
-          _StepLine(),
-          const _StepCircle(active: false, label: '완료'),
-        ],
-      ),
-    );
-  }
-}
-
-class _StepCircle extends StatelessWidget {
-  final bool active;
-  final String label;
-  const _StepCircle({required this.active, required this.label});
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      children: [
-        Container(
-          width: 28,
-          height: 28,
-          decoration: BoxDecoration(
-            color: active ? const Color(0xFF7B4FFF) : Colors.grey[300],
-            shape: BoxShape.circle,
-          ),
-          alignment: Alignment.center,
-          child: Text(
-            label.substring(0, 1),
-            style: TextStyle(
-              color: active ? Colors.white : Colors.black38,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-        ),
-        const SizedBox(height: 4),
-        Text(label,
-            style: TextStyle(
-                fontSize: 12,
-                color: active ? const Color(0xFF7B4FFF) : Colors.black38)),
-      ],
-    );
-  }
-}
-
-class _StepLine extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      width: 24,
-      height: 2,
-      color: Colors.grey[300],
-      margin: const EdgeInsets.symmetric(horizontal: 2),
     );
   }
 }
@@ -221,19 +162,19 @@ class _RadioCard extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 12),
         decoration: BoxDecoration(
-          color: selected ? const Color(0xFFF8F4FF) : Colors.white,
+          color: selected ? const Color(0xFFE8F5E9) : Colors.white,
           border: Border.all(
-              color: selected ? const Color(0xFF7B4FFF) : Colors.grey.shade300,
+              color: selected ? const Color(0xFF4CAF50) : Colors.grey.shade300,
               width: 2),
           borderRadius: BorderRadius.circular(12),
         ),
         child: Row(
           children: [
             Icon(selected ? Icons.radio_button_checked : Icons.radio_button_off,
-                color: selected ? const Color(0xFF7B4FFF) : Colors.grey),
+                color: selected ? const Color(0xFF4CAF50) : Colors.grey),
             const SizedBox(width: 12),
             Icon(icon,
-                color: selected ? const Color(0xFF7B4FFF) : Colors.grey,
+                color: selected ? const Color(0xFF4CAF50) : Colors.grey,
                 size: 28),
             const SizedBox(width: 12),
             Expanded(
@@ -277,7 +218,7 @@ class _PersonalPurposeSection extends StatelessWidget {
               style: TextStyle(
                   fontWeight: FontWeight.bold,
                   fontSize: 15,
-                  color: Color(0xFF7B4FFF))),
+                  color: Color(0xFF4CAF50))),
           const SizedBox(height: 12),
           _RadioCard(
             selected: selected == 0,
@@ -401,10 +342,10 @@ class _PeriodChip extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 8),
         decoration: BoxDecoration(
-          color: selected ? const Color(0xFF7B4FFF) : const Color(0xFFF8F8FA),
+          color: selected ? const Color(0xFF4CAF50) : const Color(0xFFF8F8FA),
           borderRadius: BorderRadius.circular(20),
           border: Border.all(
-              color: selected ? const Color(0xFF7B4FFF) : Colors.grey.shade300,
+              color: selected ? const Color(0xFF4CAF50) : Colors.grey.shade300,
               width: 2),
         ),
         child: Text(label,
@@ -448,7 +389,6 @@ class _FirstMemorySection extends StatefulWidget {
 
 class _FirstMemorySectionState extends State<_FirstMemorySection> {
   File? _imageFile;
-  XFile? _xfile;
   Uint8List? _webImageBytes;
   final ImagePicker _picker = ImagePicker();
 
@@ -460,7 +400,6 @@ class _FirstMemorySectionState extends State<_FirstMemorySection> {
           final bytes = await image.readAsBytes();
           setState(() {
             _webImageBytes = bytes;
-            _xfile = image;
           });
         } else {
           setState(() {
@@ -497,7 +436,7 @@ class _FirstMemorySectionState extends State<_FirstMemorySection> {
       imageWidget = const Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(Icons.add_a_photo, color: Color(0xFF7B4FFF), size: 32),
+          Icon(Icons.add_a_photo, color: Color(0xFF4CAF50), size: 32),
           SizedBox(height: 8),
           Text('사진/영상 추가하기',
               style: TextStyle(color: Colors.black38, fontSize: 13)),
@@ -550,10 +489,8 @@ class _FirstMemorySectionState extends State<_FirstMemorySection> {
 }
 
 class _ImageUploadSection extends StatefulWidget {
-  final File? imageFile;
   final ValueChanged<File?> onImageSelected;
   const _ImageUploadSection({
-    this.imageFile,
     required this.onImageSelected,
   });
   @override
@@ -562,14 +499,12 @@ class _ImageUploadSection extends StatefulWidget {
 
 class _ImageUploadSectionState extends State<_ImageUploadSection> {
   File? _imageFile;
-  XFile? _xfile;
   Uint8List? _webImageBytes;
   final ImagePicker _picker = ImagePicker();
 
   @override
   void initState() {
     super.initState();
-    _imageFile = widget.imageFile;
   }
 
   Future<void> _pickImage() async {
@@ -580,7 +515,6 @@ class _ImageUploadSectionState extends State<_ImageUploadSection> {
           final bytes = await image.readAsBytes();
           setState(() {
             _webImageBytes = bytes;
-            _xfile = image;
           });
         } else {
           setState(() {
@@ -617,7 +551,7 @@ class _ImageUploadSectionState extends State<_ImageUploadSection> {
       imageWidget = const Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(Icons.add_a_photo, color: Color(0xFF7B4FFF), size: 32),
+          Icon(Icons.add_a_photo, color: Color(0xFF4CAF50), size: 32),
           SizedBox(height: 8),
           Text('사진/영상 추가하기',
               style: TextStyle(color: Colors.black38, fontSize: 13)),
@@ -671,11 +605,11 @@ class _ImageUploadSectionState extends State<_ImageUploadSection> {
 
 class _NextButton extends StatelessWidget {
   final File? imageFile;
-  final String title;
+  final TextEditingController titleController;
 
   const _NextButton({
     this.imageFile,
-    required this.title,
+    required this.titleController,
   });
 
   @override
@@ -687,47 +621,39 @@ class _NextButton extends StatelessWidget {
         width: double.infinity,
         height: 52,
         child: ElevatedButton(
-          onPressed: () {
-            if (title.isEmpty) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('캡슐 제목을 입력해주세요')),
-              );
-              return;
-            }
+          onPressed: titleController.text.trim().isEmpty
+              ? null
+              : () async {
+                  // CapsuleWriteScreen으로 이동하고 결과를 받음
+                  final result = await Navigator.pushNamed(
+                      context, '/capsule_write',
+                      arguments: {
+                        'capsuleType':
+                            CapsuleType.personal, // CapsuleType enum 사용
+                        'imageFile': imageFile,
+                        'capsuleInfo': {
+                          'title': titleController.text.trim(),
+                          'type': CapsuleType.personal,
+                          'members': ['user1'],
+                          'createdAt': DateTime.now(),
+                          'openDate':
+                              DateTime.now().add(const Duration(days: 30)),
+                          'isOpened': false,
+                        },
+                      });
 
-            final capsuleInfo = {
-              'id': DateTime.now().millisecondsSinceEpoch.toString(),
-              'title': title,
-              'type': CapsuleType.personal,
-              'members': ['user1'],
-              'createdAt': DateTime.now(),
-              'openDate': DateTime.now().add(const Duration(days: 100)),
-              'points': 0,
-              'isOpened': false,
-            };
-
-            Navigator.pushNamed(
-              context,
-              '/capsule_write',
-              arguments: {
-                'capsuleInfo': capsuleInfo,
-                'imageFile': imageFile,
-              },
-            ).then((result) {
-              if (result is Map<String, dynamic>) {
-                Navigator.pop(context, result);
-              }
-            });
-          },
+                  // CapsuleWriteScreen에서 결과가 있으면 홈 화면으로 전달
+                  if (result is Map<String, dynamic> && context.mounted) {
+                    Navigator.of(context).pop(result);
+                  }
+                },
           style: ElevatedButton.styleFrom(
-            backgroundColor: const Color(0xFF7B4FFF),
-            foregroundColor: Colors.white,
-            textStyle:
-                const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-            shape:
-                RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+            backgroundColor: const Color(0xFF4CAF50),
+            disabledBackgroundColor: Colors.grey[300],
+            foregroundColor: Colors.white, // 활성화 상태에서 텍스트 색상을 흰색으로 설정
+            disabledForegroundColor: Colors.black54, // 비활성화 상태에서는 어두운 회색으로 설정
           ),
-          child: const Text('다음 단계로'),
+          child: const Text('다음'),
         ),
       ),
     );

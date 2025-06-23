@@ -4,18 +4,14 @@ import 'dart:io';
 import '../../../models/capsule.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'dart:typed_data';
+import '../home/home_screen.dart';
 
 class CapsuleWriteScreen extends StatelessWidget {
   final CapsuleType capsuleType;
-  final File? imageFile;
-  const CapsuleWriteScreen(
-      {super.key, required this.capsuleType, this.imageFile});
+  const CapsuleWriteScreen({super.key, required this.capsuleType});
 
   @override
   Widget build(BuildContext context) {
-    final args = ModalRoute.of(context)?.settings.arguments as Map?;
-    final File? previewImage =
-        args != null ? args['imageFile'] as File? : imageFile;
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
@@ -45,7 +41,7 @@ class CapsuleWriteScreen extends StatelessWidget {
           const SizedBox(height: 18),
           const _DiarySection(),
           const SizedBox(height: 18),
-          _PhotoSection(previewImage: previewImage),
+          _PhotoSection(),
           const SizedBox(height: 18),
           const _RewardSection(),
           const SizedBox(height: 24),
@@ -99,7 +95,7 @@ class _FinanceActivitySection extends StatelessWidget {
                 onPressed: () {},
                 child: const Text('더보기',
                     style: TextStyle(
-                        color: Color(0xFF7B4FFF), fontWeight: FontWeight.bold)),
+                        color: Color(0xFF4CAF50), fontWeight: FontWeight.bold)),
               ),
             ],
           ),
@@ -190,6 +186,10 @@ class _DiarySection extends StatelessWidget {
   const _DiarySection();
   @override
   Widget build(BuildContext context) {
+    final args = ModalRoute.of(context)?.settings.arguments as Map?;
+    final capsuleInfo = args?['capsuleInfo'] as Map?;
+    final title = capsuleInfo?['title'] as String? ?? '첫 월급 입금! 드디어 시작된 직장생활';
+
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 16),
       padding: const EdgeInsets.all(18),
@@ -207,7 +207,7 @@ class _DiarySection extends StatelessWidget {
               style: TextStyle(fontWeight: FontWeight.w600, fontSize: 13)),
           const SizedBox(height: 4),
           TextFormField(
-            initialValue: '첫 월급 입금! 드디어 시작된 직장생활',
+            initialValue: title,
             decoration: InputDecoration(
               contentPadding:
                   const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
@@ -241,8 +241,7 @@ class _DiarySection extends StatelessWidget {
 }
 
 class _PhotoSection extends StatefulWidget {
-  final File? previewImage;
-  const _PhotoSection({this.previewImage});
+  const _PhotoSection();
 
   @override
   State<_PhotoSection> createState() => _PhotoSectionState();
@@ -250,16 +249,12 @@ class _PhotoSection extends StatefulWidget {
 
 class _PhotoSectionState extends State<_PhotoSection> {
   File? _imageFile;
-  XFile? _xfile;
   Uint8List? _webImageBytes;
   final ImagePicker _picker = ImagePicker();
 
   @override
   void initState() {
     super.initState();
-    if (widget.previewImage != null && !kIsWeb) {
-      _imageFile = widget.previewImage;
-    }
   }
 
   Future<void> _pickImage() async {
@@ -270,7 +265,6 @@ class _PhotoSectionState extends State<_PhotoSection> {
           final bytes = await image.readAsBytes();
           setState(() {
             _webImageBytes = bytes;
-            _xfile = image;
           });
         } else {
           setState(() {
@@ -306,9 +300,9 @@ class _PhotoSectionState extends State<_PhotoSection> {
       imageWidget = const Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(Icons.add_a_photo, color: Color(0xFF7B4FFF), size: 36),
+          Icon(Icons.add_a_photo, color: Color(0xFF4CAF50), size: 36),
           SizedBox(height: 8),
-          Text('사진/영상 추가하기', style: TextStyle(color: Color(0xFF7B4FFF))),
+          Text('사진/영상 추가하기', style: TextStyle(color: Color(0xFF4CAF50))),
         ],
       );
     }
@@ -428,7 +422,9 @@ class _BottomButtons extends StatelessWidget {
   Widget build(BuildContext context) {
     final args = ModalRoute.of(context)?.settings.arguments as Map?;
     final capsuleInfo = args?['capsuleInfo'] as Map?;
-    final imageFile = args?['imageFile'];
+    final capsuleType =
+        args?['capsuleType'] as CapsuleType? ?? CapsuleType.personal;
+
     return Container(
       color: Colors.white,
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
@@ -440,7 +436,7 @@ class _BottomButtons extends StatelessWidget {
               style: OutlinedButton.styleFrom(
                 padding: const EdgeInsets.symmetric(vertical: 16),
                 textStyle: const TextStyle(fontWeight: FontWeight.bold),
-                side: const BorderSide(color: Color(0xFF7B4FFF)),
+                side: const BorderSide(color: Color(0xFF4CAF50)),
               ),
               child: const Text('임시저장'),
             ),
@@ -452,25 +448,31 @@ class _BottomButtons extends StatelessWidget {
                 if (capsuleInfo != null) {
                   final newCapsule = {
                     'capsule': Capsule(
-                      id: capsuleInfo['id'],
-                      title: capsuleInfo['title'],
-                      type: capsuleInfo['type'],
-                      members: List<String>.from(capsuleInfo['members'] ?? []),
-                      createdAt: capsuleInfo['createdAt'],
-                      openDate: capsuleInfo['openDate'],
+                      id: capsuleInfo['id'] ??
+                          DateTime.now().millisecondsSinceEpoch.toString(),
+                      title: capsuleInfo['title'] ?? '새 타임캡슐',
+                      type: capsuleInfo['type'] ?? capsuleType,
+                      members: List<String>.from(
+                          capsuleInfo['members'] ?? ['user1']),
+                      createdAt: capsuleInfo['createdAt'] ?? DateTime.now(),
+                      openDate: capsuleInfo['openDate'] ??
+                          DateTime.now().add(const Duration(days: 30)),
                       points: capsuleInfo['points'] ?? 0,
                       isOpened: capsuleInfo['isOpened'] ?? false,
                     ),
                     'contentCount': 1,
                     'showOpenButton': true,
                   };
-                  Navigator.pop(context, newCapsule);
+
+                  // CapsuleCreateScreen으로 돌아가서 결과 전달
+                  Navigator.of(context).pop(newCapsule);
                 } else {
-                  Navigator.pop(context);
+                  // 캡슐 정보가 없으면 그냥 뒤로가기
+                  Navigator.of(context).pop();
                 }
               },
               style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFF7B4FFF),
+                backgroundColor: const Color(0xFF4CAF50),
                 foregroundColor: Colors.white,
                 padding: const EdgeInsets.symmetric(vertical: 16),
                 textStyle: const TextStyle(fontWeight: FontWeight.bold),

@@ -7,7 +7,6 @@ import 'presentation/screens/create/capsule_write_screen.dart';
 import 'presentation/screens/detail/detail_screen.dart';
 import 'presentation/screens/capsule_open_screen.dart';
 import 'models/capsule.dart';
-import 'dart:io';
 
 // Flutter 3.32.2 버전에서는 타입 호환성 문제가 있어 다른 방식으로 테마 설정
 
@@ -73,7 +72,7 @@ class TimeCapsuleApp extends StatelessWidget {
       // Material Design 3 테마
       useMaterial3: true,
       colorScheme: ColorScheme.fromSeed(
-        seedColor: Colors.deepPurple,
+        seedColor: const Color(0xFF4CAF50),
         brightness: Brightness.light,
       ),
 
@@ -158,10 +157,59 @@ class TimeCapsuleApp extends StatelessWidget {
     return ThemeData(
       useMaterial3: true,
       colorScheme: ColorScheme.fromSeed(
-        seedColor: Colors.deepPurple,
+        seedColor: const Color(0xFF4CAF50),
         brightness: Brightness.dark,
       ),
       // 다크 테마 추가 설정들도 라이트 테마와 동일하게 적용
+    );
+  }
+}
+
+// 에러 화면 위젯
+class ErrorScreen extends StatelessWidget {
+  final String message;
+
+  const ErrorScreen({
+    super.key,
+    required this.message,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('오류'),
+        automaticallyImplyLeading: false,
+      ),
+      body: Center(
+        child: Padding(
+          padding: const EdgeInsets.all(24.0),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const Icon(
+                Icons.error_outline,
+                size: 64,
+                color: Colors.red,
+              ),
+              const SizedBox(height: 24),
+              Text(
+                message,
+                style: Theme.of(context).textTheme.titleLarge,
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 32),
+              ElevatedButton.icon(
+                onPressed: () {
+                  AppRouter.goToHome();
+                },
+                icon: const Icon(Icons.home),
+                label: const Text('홈으로 돌아가기'),
+              ),
+            ],
+          ),
+        ),
+      ),
     );
   }
 }
@@ -226,11 +274,9 @@ class AppRouter {
         final args = settings.arguments as Map?;
         final CapsuleType capsuleType =
             args?['capsuleType'] ?? CapsuleType.personal;
-        final File? imageFile = args?['imageFile'];
         return MaterialPageRoute(
           builder: (_) => CapsuleWriteScreen(
             capsuleType: capsuleType,
-            imageFile: imageFile,
           ),
           settings: settings,
         );
@@ -260,55 +306,6 @@ class AppRouter {
   static Route<dynamic> _errorRoute(String message) {
     return MaterialPageRoute(
       builder: (_) => ErrorScreen(message: message),
-    );
-  }
-}
-
-// 에러 화면 위젯
-class ErrorScreen extends StatelessWidget {
-  final String message;
-
-  const ErrorScreen({
-    super.key,
-    required this.message,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('오류'),
-        automaticallyImplyLeading: false,
-      ),
-      body: Center(
-        child: Padding(
-          padding: const EdgeInsets.all(24.0),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              const Icon(
-                Icons.error_outline,
-                size: 64,
-                color: Colors.red,
-              ),
-              const SizedBox(height: 24),
-              Text(
-                message,
-                style: Theme.of(context).textTheme.titleLarge,
-                textAlign: TextAlign.center,
-              ),
-              const SizedBox(height: 32),
-              ElevatedButton.icon(
-                onPressed: () {
-                  AppRouter.goToHome();
-                },
-                icon: const Icon(Icons.home),
-                label: const Text('홈으로 돌아가기'),
-              ),
-            ],
-          ),
-        ),
-      ),
     );
   }
 }

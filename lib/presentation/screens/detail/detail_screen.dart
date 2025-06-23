@@ -3,7 +3,6 @@ import 'package:provider/provider.dart';
 import '../../providers/capsule_provider.dart';
 import '../../../models/capsule.dart';
 import '../../../models/content.dart';
-import '../create/capsule_write_screen.dart';
 import 'dart:io';
 
 class DetailScreen extends StatefulWidget {
@@ -31,11 +30,12 @@ class _DetailScreenState extends State<DetailScreen> {
 
   Future<void> _loadData() async {
     final provider = context.read<CapsuleProvider>();
-    
+
     try {
       final loadedCapsule = await provider.getCapsuleById(widget.capsuleId);
-      final loadedContents = await provider.getContentsByCapsuleId(widget.capsuleId);
-      
+      final loadedContents =
+          await provider.getContentsByCapsuleId(widget.capsuleId);
+
       setState(() {
         capsule = loadedCapsule;
         contents = loadedContents;
@@ -52,8 +52,9 @@ class _DetailScreenState extends State<DetailScreen> {
   Widget build(BuildContext context) {
     // Mock: if capsuleId == '3', show the latest written content
     final bool isLatest = widget.capsuleId == '3';
-    final String mockText = '오늘 드디어 첫 월급이 입금되었다! 취업 준비하며 고생했던 시간들이 주마등처럼 스쳐 지나간다. 이제 금융적으로 독립할 수 있게 되어서 너무 기쁘다. 월급의 절반은 미래를 위해 저축하고, 나머지는 현명하게 사용해야겠다. 6개월 후 이 타임캡슐을 열어볼 날이 기대된다!';
-    final File? mockImage = null; // 실제로는 이미지 경로를 저장해야 함
+    const String mockText =
+        '오늘 드디어 첫 월급이 입금되었다! 취업 준비하며 고생했던 시간들이 주마등처럼 스쳐 지나간다. 이제 금융적으로 독립할 수 있게 되어서 너무 기쁘다. 월급의 절반은 미래를 위해 저축하고, 나머지는 현명하게 사용해야겠다. 6개월 후 이 타임캡슐을 열어볼 날이 기대된다!';
+    const File? mockImage = null; // 실제로는 이미지 경로를 저장해야 함
 
     if (isLoading) {
       return const Scaffold(
@@ -81,16 +82,20 @@ class _DetailScreenState extends State<DetailScreen> {
             ? Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text('내가 쓴 최근 타임캡슐', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20)),
+                  const Text('내가 쓴 최근 타임캡슐',
+                      style:
+                          TextStyle(fontWeight: FontWeight.bold, fontSize: 20)),
                   const SizedBox(height: 16),
-                  Text(mockText, style: const TextStyle(fontSize: 16)),
+                  const Text(mockText, style: TextStyle(fontSize: 16)),
                   const SizedBox(height: 24),
                   mockImage == null
                       ? Container(
                           width: 120,
                           height: 120,
                           color: Colors.grey[200],
-                          child: const Center(child: Icon(Icons.image, size: 48, color: Colors.grey)),
+                          child: const Center(
+                              child: Icon(Icons.image,
+                                  size: 48, color: Colors.grey)),
                         )
                       : Image.file(mockImage, width: 120, height: 120),
                 ],
@@ -108,20 +113,27 @@ class _DetailScreenState extends State<DetailScreen> {
                           Row(
                             children: [
                               Icon(
-                                capsule!.type == CapsuleType.personal ? Icons.person : Icons.group,
+                                capsule!.type == CapsuleType.personal
+                                    ? Icons.person
+                                    : Icons.group,
                                 color: Theme.of(context).primaryColor,
                               ),
                               const SizedBox(width: 8),
                               Text(
-                                capsule!.type == CapsuleType.personal ? '개인 타임캡슐' : '그룹 타임캡슐',
-                                style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                                capsule!.type == CapsuleType.personal
+                                    ? '개인 타임캡슐'
+                                    : '그룹 타임캡슐',
+                                style: const TextStyle(
+                                    fontSize: 16, fontWeight: FontWeight.bold),
                               ),
                             ],
                           ),
                           const SizedBox(height: 8),
-                          if (capsule!.type == CapsuleType.group && capsule!.groupName != null)
+                          if (capsule!.type == CapsuleType.group &&
+                              capsule!.groupName != null)
                             Text('그룹명: ${capsule!.groupName}'),
-                          if (capsule!.type == CapsuleType.group && capsule!.members.isNotEmpty)
+                          if (capsule!.type == CapsuleType.group &&
+                              capsule!.members.isNotEmpty)
                             Text('참여자: ${capsule!.members.join(', ')}'),
                           const SizedBox(height: 8),
                           Text('생성일: ${_formatDate(capsule!.createdAt)}'),
@@ -140,7 +152,7 @@ class _DetailScreenState extends State<DetailScreen> {
                     ),
                   ),
                   const SizedBox(height: 16),
-                  
+
                   // 더미 금융 데이터
                   const Card(
                     child: Padding(
@@ -148,27 +160,32 @@ class _DetailScreenState extends State<DetailScreen> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text('오늘의 금융 활동', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                          Text('오늘의 금융 활동',
+                              style: TextStyle(
+                                  fontSize: 16, fontWeight: FontWeight.bold)),
                           SizedBox(height: 8),
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
                               Text('스타벅스'),
-                              Text('-5,600원', style: TextStyle(color: Colors.red)),
+                              Text('-5,600원',
+                                  style: TextStyle(color: Colors.red)),
                             ],
                           ),
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
                               Text('급여'),
-                              Text('+2,500,000원', style: TextStyle(color: Colors.blue)),
+                              Text('+2,500,000원',
+                                  style: TextStyle(color: Colors.blue)),
                             ],
                           ),
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
                               Text('적금'),
-                              Text('-300,000원', style: TextStyle(color: Colors.orange)),
+                              Text('-300,000원',
+                                  style: TextStyle(color: Colors.orange)),
                             ],
                           ),
                         ],
@@ -176,9 +193,11 @@ class _DetailScreenState extends State<DetailScreen> {
                     ),
                   ),
                   const SizedBox(height: 16),
-                  
+
                   // 콘텐츠 목록
-                  const Text('저장된 추억', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                  const Text('저장된 추억',
+                      style:
+                          TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
                   const SizedBox(height: 8),
                   Expanded(
                     child: contents.isEmpty
@@ -191,17 +210,21 @@ class _DetailScreenState extends State<DetailScreen> {
                                 child: Padding(
                                   padding: const EdgeInsets.all(16.0),
                                   child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
                                     children: [
                                       Text(
                                         _formatDate(content.createdAt),
-                                        style: const TextStyle(fontSize: 12, color: Colors.grey),
+                                        style: const TextStyle(
+                                            fontSize: 12, color: Colors.grey),
                                       ),
                                       const SizedBox(height: 8),
                                       Text(content.text),
                                       if (content.imageUrl != null) ...[
                                         const SizedBox(height: 8),
-                                        const Text('📷 이미지 첨부됨', style: TextStyle(color: Colors.blue)),
+                                        const Text('📷 이미지 첨부됨',
+                                            style:
+                                                TextStyle(color: Colors.blue)),
                                       ],
                                     ],
                                   ),
@@ -211,7 +234,7 @@ class _DetailScreenState extends State<DetailScreen> {
                           ),
                   ),
                   const SizedBox(height: 16),
-                  
+
                   // 타임캡슐 열기 버튼
                   SizedBox(
                     width: double.infinity,
@@ -240,7 +263,7 @@ class _DetailScreenState extends State<DetailScreen> {
       setState(() {
         capsule = capsule!.copyWith(isOpened: true);
       });
-      
+
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('타임캡슐이 열렸습니다! 🎉')),
@@ -318,12 +341,12 @@ class _AddContentDialogState extends State<_AddContentDialog> {
 
     try {
       await context.read<CapsuleProvider>().addContent(
-        capsuleId: widget.capsuleId,
-        text: _textController.text.trim(),
-      );
-      
+            capsuleId: widget.capsuleId,
+            text: _textController.text.trim(),
+          );
+
       widget.onContentAdded();
-      
+
       if (mounted) {
         Navigator.pop(context);
         ScaffoldMessenger.of(context).showSnackBar(
@@ -338,4 +361,4 @@ class _AddContentDialogState extends State<_AddContentDialog> {
       }
     }
   }
-} 
+}

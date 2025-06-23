@@ -1,15 +1,27 @@
 import 'package:flutter/material.dart';
 import '../../../models/capsule.dart';
-import '../create/capsule_write_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
+
+  // 새로 만든 캡슐을 저장하기 위한 static 변수와 메서드
+  static Map<String, dynamic>? _newCapsule;
+
+  static void addNewCapsule(Map<String, dynamic> capsule) {
+    _newCapsule = capsule;
+  }
+
+  static Map<String, dynamic>? getAndClearNewCapsule() {
+    final capsule = _newCapsule;
+    _newCapsule = null;
+    return capsule;
+  }
 
   @override
   State<HomeScreen> createState() => _HomeScreenState();
 }
 
-class _HomeScreenState extends State<HomeScreen> {
+class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   int _selectedIndex = 0;
   final List<Map<String, dynamic>> _capsules = [
     {
@@ -54,12 +66,6 @@ class _HomeScreenState extends State<HomeScreen> {
     },
   ];
 
-  void _addCapsule(Map<String, dynamic> newCapsule) {
-    setState(() {
-      _capsules.insert(0, newCapsule);
-    });
-  }
-
   void _increaseContentCount(String capsuleId) {
     setState(() {
       final idx = _capsules.indexWhere((c) => c['capsule'].id == capsuleId);
@@ -70,46 +76,68 @@ class _HomeScreenState extends State<HomeScreen> {
     });
   }
 
-  void _showCreateCapsuleDialog() {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('타임캡슐 만들기'),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            ListTile(
-              leading: const Icon(Icons.person),
-              title: const Text('개인형'),
-              onTap: () {
-                Navigator.pop(context);
-                Navigator.pushNamed(context, '/capsule_create').then((result) {
-                  if (result is Map<String, dynamic>) {
-                    setState(() {
-                      _capsules.add(result);
-                    });
-                  }
-                });
-              },
-            ),
-            ListTile(
-              leading: const Icon(Icons.group),
-              title: const Text('모임형'),
-              onTap: () {
-                Navigator.pop(context);
-                Navigator.pushNamed(context, '/capsule_create').then((result) {
-                  if (result is Map<String, dynamic>) {
-                    setState(() {
-                      _capsules.add(result);
-                    });
-                  }
-                });
-              },
-            ),
-          ],
-        ),
-      ),
-    );
+  void _onAddButtonPressed() async {
+    final result = await Navigator.pushNamed(context, '/capsule_create');
+    if (result is Map<String, dynamic>) {
+      addCapsuleToList(result);
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addObserver(this);
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) {
+      _checkForNewCapsule();
+    }
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    // 화면이 다시 포커스를 받을 때마다 새 캡슐 확인
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _checkForNewCapsule();
+    });
+  }
+
+  void _checkForNewCapsule() {
+    // 라우트 arguments 확인
+    final args = ModalRoute.of(context)?.settings.arguments;
+    if (args is Map<String, dynamic> && args['capsule'] != null) {
+      addCapsuleToList(args);
+    }
+
+    // static 변수에서 새 캡슐 확인
+    final newCapsule = HomeScreen.getAndClearNewCapsule();
+    if (newCapsule != null) {
+      addCapsuleToList(newCapsule);
+    }
+  }
+
+  // 캡슐을 리스트에 추가하는 헬퍼 메서드
+  void addCapsuleToList(Map<String, dynamic> capsuleData) {
+    setState(() {
+      // 중복 추가 방지를 위해 같은 ID의 캡슐이 있는지 확인
+      final existingIndex = _capsules
+          .indexWhere((c) => c['capsule'].id == capsuleData['capsule'].id);
+      if (existingIndex >= 0) {
+        _capsules[existingIndex] = capsuleData;
+      } else {
+        // 새 캡슐을 리스트의 맨 앞에 추가
+        _capsules.insert(0, capsuleData);
+      }
+    });
   }
 
   @override
@@ -169,7 +197,7 @@ class _HomeScreenState extends State<HomeScreen> {
           });
         },
         type: BottomNavigationBarType.fixed,
-        selectedItemColor: const Color(0xFF7B4FFF),
+        selectedItemColor: const Color(0xFF4CAF50),
         unselectedItemColor: Colors.grey,
         items: const [
           BottomNavigationBarItem(
@@ -195,9 +223,9 @@ class _HomeScreenState extends State<HomeScreen> {
         ],
       ),
       floatingActionButton: FloatingActionButton(
-        backgroundColor: const Color(0xFF7B4FFF),
+        backgroundColor: const Color(0xFF4CAF50),
+        onPressed: _onAddButtonPressed,
         child: const Icon(Icons.add, color: Colors.white),
-        onPressed: _showCreateCapsuleDialog,
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
     );
@@ -211,7 +239,7 @@ class _TopBanner extends StatelessWidget {
       margin: const EdgeInsets.all(16),
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: const Color(0xFF7B4FFF),
+        color: const Color(0xFF4CAF50),
         borderRadius: BorderRadius.circular(16),
       ),
       child: Row(
@@ -226,7 +254,7 @@ class _TopBanner extends StatelessWidget {
                         fontSize: 18,
                         fontWeight: FontWeight.bold)),
                 SizedBox(height: 6),
-                Text('노롯게 구워진 추억 저장소',
+                Text('노릇하게 구워진 추억 저장소',
                     style: TextStyle(color: Colors.white70, fontSize: 13)),
                 SizedBox(height: 2),
                 Text('2,000포인트 적립 중!',
@@ -241,12 +269,13 @@ class _TopBanner extends StatelessWidget {
             width: 48,
             height: 48,
             decoration: const BoxDecoration(
-              color: Colors.yellow,
+              color: Colors.white,
               shape: BoxShape.circle,
             ),
             alignment: Alignment.center,
             child: const Text('1/3',
-                style: TextStyle(fontWeight: FontWeight.bold)),
+                style: TextStyle(
+                    fontWeight: FontWeight.bold, color: Color(0xFF4CAF50))),
           ),
         ],
       ),
@@ -281,8 +310,15 @@ class _CapsuleTypeSection extends StatelessWidget {
               label: '개인형',
               description: '나만의 일기와 금융 생활을 기록해요',
               color: const Color(0xFFF3EDFF),
-              onTap: () {
-                Navigator.pushNamed(context, '/capsule_create');
+              onTap: () async {
+                final result =
+                    await Navigator.pushNamed(context, '/capsule_create');
+                if (result is Map<String, dynamic> && context.mounted) {
+                  // HomeScreenState의 _addCapsuleToList 메서드를 호출하기 위해 context를 통해 접근
+                  final homeState =
+                      context.findAncestorStateOfType<_HomeScreenState>();
+                  homeState?.addCapsuleToList(result);
+                }
               },
             ),
             _TypeCard(
@@ -290,8 +326,15 @@ class _CapsuleTypeSection extends StatelessWidget {
               label: '모임형',
               description: '친구들과 함께 계비(契費)를 관리해요',
               color: const Color(0xFFEAF3FF),
-              onTap: () {
-                Navigator.pushNamed(context, '/capsule_create');
+              onTap: () async {
+                final result =
+                    await Navigator.pushNamed(context, '/capsule_create');
+                if (result is Map<String, dynamic> && context.mounted) {
+                  // HomeScreenState의 _addCapsuleToList 메서드를 호출하기 위해 context를 통해 접근
+                  final homeState =
+                      context.findAncestorStateOfType<_HomeScreenState>();
+                  homeState?.addCapsuleToList(result);
+                }
               },
             ),
           ],
@@ -383,7 +426,7 @@ class _ServiceInfoRow extends StatelessWidget {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Icon(Icons.check_circle, color: Color(0xFF7B4FFF), size: 20),
+          const Icon(Icons.check_circle, color: Color(0xFF4CAF50), size: 20),
           const SizedBox(width: 8),
           Expanded(
             child: Column(
@@ -455,7 +498,7 @@ class _MyCapsuleCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final dDay = capsule.openDate.difference(DateTime.now()).inDays;
     final color = capsule.type == CapsuleType.personal
-        ? const Color(0xFF7B4FFF)
+        ? const Color(0xFF4CAF50)
         : const Color(0xFF3B7BFF);
 
     return GestureDetector(
@@ -479,7 +522,7 @@ class _MyCapsuleCard extends StatelessWidget {
             Row(
               children: [
                 CircleAvatar(
-                  backgroundColor: color.withOpacity(0.1),
+                  backgroundColor: color.withAlpha(25), // 0.1 * 255 ≈ 25
                   child: Icon(
                     capsule.type == CapsuleType.personal
                         ? Icons.visibility
