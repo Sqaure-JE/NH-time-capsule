@@ -83,8 +83,8 @@ class TimeCapsuleApp extends StatelessWidget {
 
   ThemeData _buildLightTheme() {
     return ThemeData(
-      // Material Design 3 테마
-      useMaterial3: true,
+      // Material Design 2 테마 (웹 호환성을 위해)
+      useMaterial3: false,
       colorScheme: ColorScheme.fromSeed(
         seedColor: const Color(0xFF4CAF50),
         brightness: Brightness.light,
@@ -169,7 +169,7 @@ class TimeCapsuleApp extends StatelessWidget {
 
   ThemeData _buildDarkTheme() {
     return ThemeData(
-      useMaterial3: true,
+      useMaterial3: false,
       colorScheme: ColorScheme.fromSeed(
         seedColor: const Color(0xFF4CAF50),
         brightness: Brightness.dark,

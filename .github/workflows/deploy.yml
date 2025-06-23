@@ -27,7 +27,7 @@ jobs:
       run: flutter config --enable-web
 
     - name: Build web
-      run: flutter build web --release --base-href /NH-time-capsule/
+      run: flutter build web --release --base-href /NH-time-capsule/ --no-tree-shake-icons
 
     - name: Deploy to GitHub Pages
       uses: peaceiris/actions-gh-pages@v3
