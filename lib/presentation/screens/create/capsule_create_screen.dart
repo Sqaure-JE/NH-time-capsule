@@ -7,32 +7,39 @@ import 'dart:typed_data';
 import '../home/widgets/emoji_selector.dart';
 
 class CapsuleCreateScreen extends StatelessWidget {
-  const CapsuleCreateScreen({super.key});
+  final bool? initialIsPersonal;
+
+  const CapsuleCreateScreen({super.key, this.initialIsPersonal});
 
   @override
   Widget build(BuildContext context) {
-    return const _CapsuleCreateScreen();
+    return _CapsuleCreateScreen(initialIsPersonal: initialIsPersonal);
   }
 }
 
 class _CapsuleCreateScreen extends StatefulWidget {
-  const _CapsuleCreateScreen();
+  final bool? initialIsPersonal;
+
+  const _CapsuleCreateScreen({this.initialIsPersonal});
 
   @override
   State<_CapsuleCreateScreen> createState() => _CapsuleCreateScreenState();
 }
 
 class _CapsuleCreateScreenState extends State<_CapsuleCreateScreen> {
-  bool isPersonal = true;
+  late bool isPersonal;
   int personalPurpose = 0; // 0: 일기, 1: 편지, 2: 목표달성
   int period = 0; // 0: 3개월, 1: 6개월, 2: 1년
   File? _firstMemoryImage;
   final _titleController = TextEditingController();
   String selectedThemeEmoji = '⭐';
+  List<String> groupMembers = ['이정은', '김혜진', '김수름', '한지혜']; // 기본 멤버
 
   @override
   void initState() {
     super.initState();
+    // initialIsPersonal이 제공되면 그 값을 사용, 아니면 기본값 true 사용
+    isPersonal = widget.initialIsPersonal ?? true;
     _titleController.addListener(() {
       setState(() {}); // 제목 변경 시 UI 업데이트
     });
@@ -76,6 +83,17 @@ class _CapsuleCreateScreenState extends State<_CapsuleCreateScreen> {
               selected: personalPurpose,
               onSelect: (idx) => setState(() => personalPurpose = idx),
             ),
+          if (!isPersonal) ...[
+            _FriendsSection(
+              members: groupMembers,
+              onMembersChanged: (newMembers) {
+                setState(() {
+                  groupMembers = newMembers;
+                });
+              },
+            ),
+            const SizedBox(height: 12),
+          ],
           if (!isPersonal || isPersonal) ...[
             const SizedBox(height: 12),
             EmojiSelector(
@@ -111,6 +129,8 @@ class _CapsuleCreateScreenState extends State<_CapsuleCreateScreen> {
       bottomNavigationBar: _NextButton(
         imageFile: _firstMemoryImage,
         titleController: _titleController,
+        isPersonal: isPersonal,
+        groupMembers: groupMembers,
       ),
     );
   }
@@ -635,10 +655,14 @@ class _ImageUploadSectionState extends State<_ImageUploadSection> {
 class _NextButton extends StatelessWidget {
   final File? imageFile;
   final TextEditingController titleController;
+  final bool isPersonal;
+  final List<String> groupMembers;
 
   const _NextButton({
     this.imageFile,
     required this.titleController,
+    required this.isPersonal,
+    required this.groupMembers,
   });
 
   @override
@@ -654,22 +678,21 @@ class _NextButton extends StatelessWidget {
               ? null
               : () async {
                   // CapsuleWriteScreen으로 이동하고 결과를 받음
-                  final result = await Navigator.pushNamed(
-                      context, '/capsule_write',
-                      arguments: {
-                        'capsuleType':
-                            CapsuleType.personal, // CapsuleType enum 사용
-                        'imageFile': imageFile,
-                        'capsuleInfo': {
-                          'title': titleController.text.trim(),
-                          'type': CapsuleType.personal,
-                          'members': ['user1'],
-                          'createdAt': DateTime.now(),
-                          'openDate':
-                              DateTime.now().add(const Duration(days: 30)),
-                          'isOpened': false,
-                        },
-                      });
+                  final result = await Navigator
+                      .pushNamed(context, '/capsule_write', arguments: {
+                    'capsuleType':
+                        isPersonal ? CapsuleType.personal : CapsuleType.group,
+                    'imageFile': imageFile,
+                    'capsuleInfo': {
+                      'title': titleController.text.trim(),
+                      'type':
+                          isPersonal ? CapsuleType.personal : CapsuleType.group,
+                      'members': isPersonal ? ['user1'] : groupMembers,
+                      'createdAt': DateTime.now(),
+                      'openDate': DateTime.now().add(const Duration(days: 30)),
+                      'isOpened': false,
+                    },
+                  });
 
                   // CapsuleWriteScreen에서 결과가 있으면 홈 화면으로 전달
                   if (result is Map<String, dynamic> && context.mounted) {
@@ -684,6 +707,193 @@ class _NextButton extends StatelessWidget {
           ),
           child: const Text('다음'),
         ),
+      ),
+    );
+  }
+}
+
+class _FriendsSection extends StatelessWidget {
+  final List<String> members;
+  final ValueChanged<List<String>> onMembersChanged;
+
+  const _FriendsSection({
+    required this.members,
+    required this.onMembersChanged,
+  });
+
+  // 추가 가능한 친구 목록
+  final List<String> availableFriends = const [
+    '이정은',
+    '김혜진',
+    '김수름',
+    '한지혜',
+    '박민수',
+    '최영희',
+    '김준호',
+    '이선미'
+  ];
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 16),
+      padding: const EdgeInsets.all(18),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              const Text('친구 선택하기',
+                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15)),
+              const Spacer(),
+              TextButton.icon(
+                onPressed: () => _showAddFriendDialog(context),
+                icon: const Icon(Icons.person_add, size: 16),
+                label: const Text('추가', style: TextStyle(fontSize: 12)),
+                style: TextButton.styleFrom(
+                  foregroundColor: const Color(0xFF4CAF50),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 4),
+          Text(
+            '${members.length}명이 선택되었습니다',
+            style: const TextStyle(fontSize: 12, color: Colors.black54),
+          ),
+          const SizedBox(height: 12),
+          if (members.isEmpty)
+            const Text(
+              '친구를 추가해주세요',
+              style: TextStyle(fontSize: 13, color: Colors.grey),
+            )
+          else
+            Wrap(
+              spacing: 8,
+              runSpacing: 8,
+              children: members
+                  .map((member) => _FriendChip(
+                        member: member,
+                        onRemove: () {
+                          final newMembers = List<String>.from(members);
+                          newMembers.remove(member);
+                          onMembersChanged(newMembers);
+                        },
+                      ))
+                  .toList(),
+            ),
+        ],
+      ),
+    );
+  }
+
+  void _showAddFriendDialog(BuildContext context) {
+    final unselectedFriends =
+        availableFriends.where((friend) => !members.contains(friend)).toList();
+
+    if (unselectedFriends.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('추가할 수 있는 친구가 없습니다')),
+      );
+      return;
+    }
+
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('친구 추가하기'),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: unselectedFriends.map((friend) {
+            return ListTile(
+              leading: CircleAvatar(
+                backgroundColor: const Color(0xFF4CAF50),
+                child: Text(friend[0],
+                    style: const TextStyle(color: Colors.white)),
+              ),
+              title: Text(friend),
+              trailing: const Icon(Icons.add_circle, color: Color(0xFF4CAF50)),
+              onTap: () {
+                final newMembers = List<String>.from(members);
+                newMembers.add(friend);
+                onMembersChanged(newMembers);
+                Navigator.pop(context);
+              },
+            );
+          }).toList(),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('취소'),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _FriendChip extends StatelessWidget {
+  final String member;
+  final VoidCallback onRemove;
+
+  const _FriendChip({
+    required this.member,
+    required this.onRemove,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.only(left: 12, top: 6, bottom: 6, right: 8),
+      decoration: BoxDecoration(
+        color: const Color(0xFF4CAF50).withOpacity(0.1),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: const Color(0xFF4CAF50).withOpacity(0.3)),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          CircleAvatar(
+            backgroundColor: const Color(0xFF4CAF50),
+            radius: 10,
+            child: Text(
+              member[0],
+              style: const TextStyle(color: Colors.white, fontSize: 10),
+            ),
+          ),
+          const SizedBox(width: 6),
+          Text(
+            member,
+            style: const TextStyle(
+              fontSize: 13,
+              color: Color(0xFF2D3748),
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+          const SizedBox(width: 4),
+          GestureDetector(
+            onTap: onRemove,
+            child: Container(
+              padding: const EdgeInsets.all(2),
+              decoration: const BoxDecoration(
+                color: Colors.red,
+                shape: BoxShape.circle,
+              ),
+              child: const Icon(
+                Icons.close,
+                size: 12,
+                color: Colors.white,
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }

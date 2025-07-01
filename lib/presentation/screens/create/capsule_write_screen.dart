@@ -17,6 +17,45 @@ class CapsuleWriteScreen extends StatefulWidget {
 class _CapsuleWriteScreenState extends State<CapsuleWriteScreen> {
   String selectedMood = '😊';
   String selectedSituation = '💰';
+  final TextEditingController _titleController = TextEditingController();
+
+  // 모임 멤버들의 최근 활동 (더미 데이터)
+  final List<Map<String, dynamic>> memberActivities = [
+    {
+      'member': '이정은',
+      'emoji': '😊',
+      'activity': '점심값 공동 결제',
+      'amount': '-15,000원',
+      'time': '2시간 전',
+    },
+    {
+      'member': '김혜진',
+      'emoji': '🤗',
+      'activity': '여행 경비 적금',
+      'amount': '+50,000원',
+      'time': '4시간 전',
+    },
+    {
+      'member': '김수름',
+      'emoji': '💪',
+      'activity': '카페 간식비',
+      'amount': '-8,500원',
+      'time': '6시간 전',
+    },
+    {
+      'member': '한지혜',
+      'emoji': '🌟',
+      'activity': '영화 관람비',
+      'amount': '-12,000원',
+      'time': '1일 전',
+    },
+  ];
+
+  @override
+  void dispose() {
+    _titleController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -46,10 +85,19 @@ class _CapsuleWriteScreenState extends State<CapsuleWriteScreen> {
         children: [
           const _DateSection(),
           const SizedBox(height: 12),
-          const _FinanceActivitySection(),
-          const SizedBox(height: 18),
+          if (widget.capsuleType == CapsuleType.group) ...[
+            _buildGroupMemberActivities(),
+            const SizedBox(height: 12),
+            _buildGroupTitleInput(),
+            const SizedBox(height: 18),
+          ] else ...[
+            const _FinanceActivitySection(),
+            const SizedBox(height: 18),
+          ],
           EmojiSelector(
-            title: '기분 선택하기 😊',
+            title: widget.capsuleType == CapsuleType.personal
+                ? '기분 선택하기 😊'
+                : '오늘 모임 기분은? 😊',
             selectedEmoji: selectedMood,
             emojis: EmojiCategories.moods,
             onSelected: (emoji) {
@@ -60,7 +108,9 @@ class _CapsuleWriteScreenState extends State<CapsuleWriteScreen> {
           ),
           const SizedBox(height: 12),
           EmojiSelector(
-            title: '내 상황 선택하기 💰',
+            title: widget.capsuleType == CapsuleType.personal
+                ? '내 상황 선택하기 💰'
+                : '우리 모임 상황은? 💰',
             selectedEmoji: selectedSituation,
             emojis: EmojiCategories.financialSituations,
             onSelected: (emoji) {
@@ -73,6 +123,8 @@ class _CapsuleWriteScreenState extends State<CapsuleWriteScreen> {
           _DiarySection(
             selectedMood: selectedMood,
             selectedSituation: selectedSituation,
+            capsuleType: widget.capsuleType,
+            titleController: _titleController,
           ),
           const SizedBox(height: 18),
           const _PhotoSection(),
@@ -82,6 +134,163 @@ class _CapsuleWriteScreenState extends State<CapsuleWriteScreen> {
         ],
       ),
       bottomNavigationBar: _BottomButtons(),
+    );
+  }
+
+  Widget _buildGroupMemberActivities() {
+    return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 16),
+      padding: const EdgeInsets.all(18),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              const Text(
+                '모임원들의 최근 활동',
+                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+              ),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                decoration: BoxDecoration(
+                  color: const Color(0xFF4CAF50).withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Text(
+                  '${memberActivities.length}개 업데이트',
+                  style: const TextStyle(
+                    color: Color(0xFF4CAF50),
+                    fontSize: 12,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 16),
+          ...memberActivities
+              .map((activity) => _buildMemberActivityItem(activity)),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildMemberActivityItem(Map<String, dynamic> activity) {
+    return Container(
+      margin: const EdgeInsets.only(bottom: 12),
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: const Color(0xFFF8F8FA),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: Colors.grey.shade200),
+      ),
+      child: Row(
+        children: [
+          CircleAvatar(
+            radius: 18,
+            backgroundColor: const Color(0xFF4CAF50).withOpacity(0.1),
+            child: Text(
+              activity['emoji'],
+              style: const TextStyle(fontSize: 16),
+            ),
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    Text(
+                      activity['member'],
+                      style: const TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 14,
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    Text(
+                      activity['time'],
+                      style: const TextStyle(
+                        color: Colors.grey,
+                        fontSize: 12,
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  activity['activity'],
+                  style: const TextStyle(fontSize: 13),
+                ),
+              ],
+            ),
+          ),
+          Text(
+            activity['amount'],
+            style: TextStyle(
+              fontWeight: FontWeight.bold,
+              fontSize: 14,
+              color:
+                  activity['amount'].startsWith('+') ? Colors.blue : Colors.red,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildGroupTitleInput() {
+    return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 16),
+      padding: const EdgeInsets.all(18),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Row(
+            children: [
+              Icon(Icons.edit, color: Color(0xFF4CAF50)),
+              SizedBox(width: 8),
+              Text(
+                '모임 타임캡슐 제목',
+                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+              ),
+            ],
+          ),
+          const SizedBox(height: 12),
+          TextField(
+            controller: _titleController,
+            decoration: InputDecoration(
+              hintText: '예: 우리들의 소중한 추억 만들기',
+              contentPadding:
+                  const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(8),
+                borderSide: BorderSide(color: Colors.grey.shade300),
+              ),
+              enabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(8),
+                borderSide: BorderSide(color: Colors.grey.shade300),
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(8),
+                borderSide: const BorderSide(color: Color(0xFF4CAF50)),
+              ),
+              filled: true,
+              fillColor: const Color(0xFFF8F8FA),
+            ),
+          ),
+        ],
+      ),
     );
   }
 }
@@ -219,17 +428,22 @@ class _FinanceActivityItem extends StatelessWidget {
 class _DiarySection extends StatelessWidget {
   final String selectedMood;
   final String selectedSituation;
+  final CapsuleType capsuleType;
+  final TextEditingController titleController;
 
   const _DiarySection({
     required this.selectedMood,
     required this.selectedSituation,
+    required this.capsuleType,
+    required this.titleController,
   });
 
   @override
   Widget build(BuildContext context) {
     final args = ModalRoute.of(context)?.settings.arguments as Map?;
     final capsuleInfo = args?['capsuleInfo'] as Map?;
-    final title = capsuleInfo?['title'] as String? ?? '월요병 때문에 힘든 하루';
+    final title = capsuleInfo?['title'] as String? ??
+        (capsuleType == CapsuleType.personal ? '월요병 때문에 힘든 하루' : '우리들의 즐거운 모임');
 
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 16),
@@ -248,33 +462,41 @@ class _DiarySection extends StatelessWidget {
                 style: const TextStyle(fontSize: 20),
               ),
               const SizedBox(width: 8),
-              const Text('오늘의 일기',
-                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+              Text(
+                capsuleType == CapsuleType.personal ? '오늘의 일기' : '우리 모임 이야기',
+                style:
+                    const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+              ),
             ],
           ),
-          const SizedBox(height: 12),
-          const Text('제목',
-              style: TextStyle(fontWeight: FontWeight.w600, fontSize: 13)),
-          const SizedBox(height: 4),
-          TextFormField(
-            initialValue: title,
-            decoration: InputDecoration(
-              contentPadding:
-                  const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-              border:
-                  OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
-              filled: true,
-              fillColor: const Color(0xFFF8F8FA),
+          if (capsuleType == CapsuleType.personal) ...[
+            const SizedBox(height: 12),
+            const Text('제목',
+                style: TextStyle(fontWeight: FontWeight.w600, fontSize: 13)),
+            const SizedBox(height: 4),
+            TextFormField(
+              controller: titleController,
+              decoration: InputDecoration(
+                contentPadding:
+                    const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                border:
+                    OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
+                filled: true,
+                fillColor: const Color(0xFFF8F8FA),
+              ),
             ),
-          ),
+          ],
           const SizedBox(height: 12),
-          const Text('내용',
-              style: TextStyle(fontWeight: FontWeight.w600, fontSize: 13)),
+          Text(
+            capsuleType == CapsuleType.personal ? '내용' : '오늘 우리 모임은?',
+            style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 13),
+          ),
           const SizedBox(height: 4),
           TextFormField(
             maxLines: 5,
-            initialValue:
-                '월요일이라 정말 피곤하고 힘들다. 주말이 너무 짧게 느껴지고 일주일이 또 시작된다는 생각에 우울하다. 스트레스를 풀고 싶어서 카페에서 비싼 음료를 마시고 배달음식도 시켰다. 계획 없이 소비하는 내 모습이 걱정되지만, 오늘만큼은 나를 위로해주고 싶었다.',
+            initialValue: capsuleType == CapsuleType.personal
+                ? '월요일이라 정말 피곤하고 힘들다. 주말이 너무 짧게 느껴지고 일주일이 또 시작된다는 생각에 우울하다. 스트레스를 풀고 싶어서 카페에서 비싸지만 맛있는 음료를 마시고 배달음식도 시켰다. 계획 없이 소비하는 내 모습이 걱정되지만, 오늘만큼은 나를 위로해주고 싶었다.'
+                : '오늘은 모두 함께 점심을 먹고 즐거운 시간을 보냈어요! 이정은님이 맛있는 카페를 추천해주셔서 다같이 갔는데 정말 좋았답니다. 김혜진님과 김수름님은 다음 모임 계획을 세워주시고, 한지혜님은 사진을 정말 잘 찍어주셨어요. 우리 모임이 이렇게 즐거운 줄 몰랐네요! 💕',
             decoration: InputDecoration(
               contentPadding:
                   const EdgeInsets.symmetric(horizontal: 12, vertical: 10),

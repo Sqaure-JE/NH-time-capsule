@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import '../../../models/capsule.dart';
 import 'widgets/capsule_card.dart';
+import '../create/group_capsule_screen.dart';
+import '../create/capsule_create_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -43,7 +45,8 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
         id: '2',
         title: '대학 동기 여행 계획',
         type: CapsuleType.group,
-        members: ['user1', 'user2'],
+        groupName: '대학 동기들',
+        members: ['이정은', '김혜진', '김수름', '한지혜'],
         createdAt: DateTime(2025, 5, 8),
         openDate: DateTime(2025, 12, 25),
         points: 0,
@@ -64,6 +67,20 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
       ),
       'contentCount': 5,
     },
+    {
+      'capsule': Capsule(
+        id: '4',
+        title: '회사 동료 모임',
+        type: CapsuleType.group,
+        groupName: '회사 동료 모임',
+        members: ['이정은', '김혜진', '김수름', '한지혜'],
+        createdAt: DateTime.now().subtract(const Duration(days: 5)),
+        openDate: DateTime.now().add(const Duration(hours: 1)), // D-DAY인 모임형 캡슐
+        points: 300,
+        isOpened: false,
+      ),
+      'contentCount': 8,
+    },
   ];
 
   void _increaseContentCount(String capsuleId) {
@@ -77,7 +94,12 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   }
 
   void _onAddButtonPressed() async {
-    final result = await Navigator.pushNamed(context, '/capsule_create');
+    final result = await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => const CapsuleCreateScreen(),
+      ),
+    );
     if (result is Map<String, dynamic>) {
       addCapsuleToList(result);
     }
@@ -140,6 +162,26 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
     });
   }
 
+  // D-DAY 순으로 캡슐 정렬하는 메서드
+  List<Map<String, dynamic>> _getSortedCapsules() {
+    final sortedCapsules = List<Map<String, dynamic>>.from(_capsules);
+    sortedCapsules.sort((a, b) {
+      final capsuleA = a['capsule'] as Capsule;
+      final capsuleB = b['capsule'] as Capsule;
+
+      final daysA = capsuleA.openDate.difference(DateTime.now()).inDays;
+      final daysB = capsuleB.openDate.difference(DateTime.now()).inDays;
+
+      // D-DAY가 된 캡슐(0 이하)을 맨 앞에
+      if (daysA <= 0 && daysB > 0) return -1;
+      if (daysA > 0 && daysB <= 0) return 1;
+
+      // 둘 다 D-DAY이거나 둘 다 미래인 경우 날짜 순으로
+      return daysA.compareTo(daysB);
+    });
+    return sortedCapsules;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -191,7 +233,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                   _ServiceInfoSection(),
                   const SizedBox(height: 24),
                   _MyCapsulesSection(
-                      capsules: _capsules,
+                      capsules: _getSortedCapsules(),
                       onContentAdded: _increaseContentCount),
                   const SizedBox(height: 16),
                   _PointBanner(),
@@ -324,8 +366,13 @@ class _CapsuleTypeSection extends StatelessWidget {
               description: '나만의 일기와\n금융생활을 기록해요',
               color: const Color(0xFFF3EDFF),
               onTap: () async {
-                final result =
-                    await Navigator.pushNamed(context, '/capsule_create');
+                final result = await Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) =>
+                        const CapsuleCreateScreen(initialIsPersonal: true),
+                  ),
+                );
                 if (result is Map<String, dynamic> && context.mounted) {
                   // HomeScreenState의 _addCapsuleToList 메서드를 호출하기 위해 context를 통해 접근
                   final homeState =
@@ -340,8 +387,13 @@ class _CapsuleTypeSection extends StatelessWidget {
               description: '친구들과 함께\n계비를 관리해요',
               color: const Color(0xFFEAF3FF),
               onTap: () async {
-                final result =
-                    await Navigator.pushNamed(context, '/capsule_create');
+                final result = await Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) =>
+                        const CapsuleCreateScreen(initialIsPersonal: false),
+                  ),
+                );
                 if (result is Map<String, dynamic> && context.mounted) {
                   // HomeScreenState의 _addCapsuleToList 메서드를 호출하기 위해 context를 통해 접근
                   final homeState =
@@ -481,7 +533,7 @@ class _MyCapsulesSection extends StatelessWidget {
         ),
         const SizedBox(height: 16),
         Container(
-          height: 200,
+          height: 220,
           child: ListView.builder(
             scrollDirection: Axis.horizontal,
             padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -501,6 +553,66 @@ class _MyCapsulesSection extends StatelessWidget {
             },
           ),
         ),
+        const SizedBox(height: 16),
+        Container(
+          margin: const EdgeInsets.symmetric(horizontal: 16),
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            color: Colors.white.withValues(alpha: 0.8),
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(color: Colors.grey.shade200),
+          ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: [
+              _buildSummaryItem(
+                '전체 캡슐',
+                '${capsules.length}개',
+                Icons.inventory_2_outlined,
+                const Color(0xFF4CAF50),
+              ),
+              Container(width: 1, height: 40, color: Colors.grey.shade300),
+              _buildSummaryItem(
+                'D-DAY',
+                '${capsules.where((c) => (c['capsule'] as Capsule).openDate.difference(DateTime.now()).inDays <= 0).length}개',
+                Icons.alarm,
+                const Color(0xFFFF6B00),
+              ),
+              Container(width: 1, height: 40, color: Colors.grey.shade300),
+              _buildSummaryItem(
+                '총 포인트',
+                '${capsules.map((c) => (c['capsule'] as Capsule).points).reduce((a, b) => a + b)}P',
+                Icons.monetization_on,
+                const Color(0xFFFFD700),
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildSummaryItem(
+      String title, String value, IconData icon, Color color) {
+    return Column(
+      children: [
+        Icon(icon, color: color, size: 24),
+        const SizedBox(height: 4),
+        Text(
+          value,
+          style: TextStyle(
+            fontWeight: FontWeight.bold,
+            fontSize: 16,
+            color: color,
+          ),
+        ),
+        Text(
+          title,
+          style: const TextStyle(
+            fontSize: 12,
+            color: Colors.grey,
+          ),
+        ),
       ],
     );
   }
@@ -511,15 +623,26 @@ class _MyCapsulesSection extends StatelessWidget {
     final dDay = capsule.openDate.difference(DateTime.now()).inDays;
     final isOpenable = dDay <= 0 && !capsule.isOpened;
 
-    if (isOpenable) {
-      // 캡슐 열기가 가능한 경우 캡슐 열기 화면으로 이동
+    if (capsule.type == CapsuleType.group) {
+      // 모임형 캡슐의 경우 GroupCapsuleScreen으로 이동
+      final result = await Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => GroupCapsuleScreen(capsule: capsule),
+        ),
+      );
+      if (result == 'contentAdded' && onContentAdded != null) {
+        onContentAdded!(capsule.id);
+      }
+    } else if (isOpenable) {
+      // 개인 캡슐이 열기 가능한 경우 캡슐 열기 화면으로 이동
       final result = await Navigator.pushNamed(context, '/capsule_open',
           arguments: capsule.id);
       if (result == 'contentAdded' && onContentAdded != null) {
         onContentAdded!(capsule.id);
       }
     } else {
-      // 캡슐 열기가 불가능한 경우 금융일기 작성 화면으로 이동
+      // 개인 캡슐이 열기 불가능한 경우 금융일기 작성 화면으로 이동
       await Navigator.pushNamed(context, '/capsule_write', arguments: {
         'capsuleType': capsule.type,
         'capsuleInfo': {

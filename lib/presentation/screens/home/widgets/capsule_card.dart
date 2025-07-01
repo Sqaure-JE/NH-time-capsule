@@ -170,14 +170,22 @@ class _EggCapsuleCardState extends State<EggCapsuleCard>
     // 금융 관련
     if (titleLower.contains('월급') ||
         titleLower.contains('급여') ||
-        titleLower.contains('salary')) return '💰';
+        titleLower.contains('salary')) {
+      return '💰';
+    }
     if (titleLower.contains('적금') ||
         titleLower.contains('저축') ||
-        titleLower.contains('saving')) return '🏦';
+        titleLower.contains('saving')) {
+      return '🏦';
+    }
     if (titleLower.contains('투자') ||
         titleLower.contains('주식') ||
-        titleLower.contains('invest')) return '📈';
-    if (titleLower.contains('대출') || titleLower.contains('loan')) return '💳';
+        titleLower.contains('invest')) {
+      return '📈';
+    }
+    if (titleLower.contains('대출') || titleLower.contains('loan')) {
+      return '💳';
+    }
 
     // 여행 관련
     if (titleLower.contains('여행') ||
@@ -285,10 +293,8 @@ class _EggCapsuleCardState extends State<EggCapsuleCard>
       animation: _fireAnimation,
       builder: (context, child) {
         return Positioned.fill(
-          child: Container(
-            child: CustomPaint(
-              painter: SparklePainter(_fireAnimation.value),
-            ),
+          child: CustomPaint(
+            painter: SparklePainter(_fireAnimation.value),
           ),
         );
       },
@@ -326,9 +332,9 @@ class _EggCapsuleCardState extends State<EggCapsuleCard>
                         begin: Alignment.topLeft,
                         end: Alignment.bottomRight,
                         colors: [
-                          eggColor.withOpacity(0.8),
+                          eggColor.withValues(alpha: 0.8),
                           eggColor,
-                          eggColor.withOpacity(0.9),
+                          eggColor.withValues(alpha: 0.9),
                         ],
                       ),
                       borderRadius: const BorderRadius.only(
@@ -339,7 +345,7 @@ class _EggCapsuleCardState extends State<EggCapsuleCard>
                       ),
                       boxShadow: [
                         BoxShadow(
-                          color: eggColor.withOpacity(0.3),
+                          color: eggColor.withValues(alpha: 0.3),
                           blurRadius: 8,
                           offset: const Offset(0, 4),
                         ),
@@ -378,13 +384,14 @@ class _EggCapsuleCardState extends State<EggCapsuleCard>
                           ),
                           decoration: BoxDecoration(
                             color: isOpenable
-                                ? Colors.white.withOpacity(0.95)
-                                : Colors.white.withOpacity(0.9),
+                                ? Colors.white.withValues(alpha: 0.95)
+                                : Colors.white.withValues(alpha: 0.9),
                             borderRadius: BorderRadius.circular(10),
                             boxShadow: isOpenable
                                 ? [
                                     BoxShadow(
-                                      color: Colors.amber.withOpacity(0.5),
+                                      color:
+                                          Colors.amber.withValues(alpha: 0.5),
                                       blurRadius: 6,
                                       offset: const Offset(0, 2),
                                     )
@@ -398,7 +405,7 @@ class _EggCapsuleCardState extends State<EggCapsuleCard>
                               fontWeight: FontWeight.bold,
                               color: isOpenable
                                   ? const Color(0xFFFF6B00)
-                                  : eggColor.withOpacity(0.8),
+                                  : eggColor.withValues(alpha: 0.8),
                             ),
                           ),
                         ),
@@ -428,10 +435,10 @@ class SparklePainter extends CustomPainter {
 
     // 반짝이 색상들
     final colors = [
-      const Color(0xFFFFD700).withOpacity(0.9),
-      const Color(0xFFFFA500).withOpacity(0.7),
-      const Color(0xFFFFFFFF).withOpacity(0.8),
-      const Color(0xFFFFE55C).withOpacity(0.6),
+      const Color(0xFFFFD700).withValues(alpha: 0.9),
+      const Color(0xFFFFA500).withValues(alpha: 0.7),
+      const Color(0xFFFFFFFF).withValues(alpha: 0.8),
+      const Color(0xFFFFE55C).withValues(alpha: 0.6),
     ];
 
     // 여러 개의 반짝이 그리기
@@ -450,7 +457,7 @@ class SparklePainter extends CustomPainter {
     }
 
     // 중앙의 큰 반짝이
-    paint.color = const Color(0xFFFFD700).withOpacity(0.9);
+    paint.color = const Color(0xFFFFD700).withValues(alpha: 0.9);
     _drawStar(canvas, paint, Offset(size.width / 2, size.height / 2),
         6 + animationValue * 3);
   }
