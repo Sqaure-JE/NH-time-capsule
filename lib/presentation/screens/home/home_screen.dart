@@ -308,7 +308,7 @@ class _CapsuleTypeSection extends StatelessWidget {
             _TypeCard(
               icon: Icons.person_outline,
               label: '개인형',
-              description: '나만의 일기와 금융 생활을 기록해요',
+              description: '나만의 일기와\n금융생활을 기록해요',
               color: const Color(0xFFF3EDFF),
               onTap: () async {
                 final result =
@@ -324,7 +324,7 @@ class _CapsuleTypeSection extends StatelessWidget {
             _TypeCard(
               icon: Icons.groups_outlined,
               label: '모임형',
-              description: '친구들과 함께 계비(契費)를 관리해요',
+              description: '친구들과 함께\n계비를 관리해요',
               color: const Color(0xFFEAF3FF),
               onTap: () async {
                 final result =
@@ -406,7 +406,24 @@ class _ServiceInfoSection extends StatelessWidget {
               style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
           SizedBox(height: 16),
           _ServiceInfoRow('금융활동과 일상의 추억을 함께 저장', '은행 거래 내역과 함께 사진, 영상 기록'),
-          _ServiceInfoRow('타임캡슐 작성 시 NH멤버스 포인트 적립', '연속 작성 시 더 많은 리워드 제공'),
+          Center(
+            child: Container(
+              padding: EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+              decoration: BoxDecoration(
+                color: Color(0xFFFFF8E1),
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: Text(
+                '7일 연속 타임캡슐 작성 시\n200P 추가적립',
+                style: TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w600,
+                  color: Color(0xFF2E7D32),
+                ),
+                textAlign: TextAlign.center,
+              ),
+            ),
+          ),
           _ServiceInfoRow('3개월, 6개월, 1년 등 보관 기간 설정', '원하는 미래 시점에 추억 확인'),
           _ServiceInfoRow('단계별 서비스 확장 예정', '카드, 마이데이터 등 연계 예정'),
         ],

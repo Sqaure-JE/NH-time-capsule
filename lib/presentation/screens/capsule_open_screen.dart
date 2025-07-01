@@ -105,7 +105,7 @@ class _CapsuleOpenScreenState extends State<CapsuleOpenScreen>
                       ],
                     ),
                     child: const Text(
-                      '여기에 타임캡슐의 추억, 사진, 메시지 등이 표시됩니다.',
+                      '여기에 타임캡슐의\n추억, 사진, 메시지 등이 표시됩니다.',
                       style: TextStyle(fontSize: 16),
                       textAlign: TextAlign.center,
                     ),
