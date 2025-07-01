@@ -399,21 +399,22 @@ class _ServiceInfoSection extends StatelessWidget {
         color: Colors.white,
         borderRadius: BorderRadius.circular(16),
       ),
-      child: const Column(
+      child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text('금융 타임캡슐 서비스',
+          const Text('금융 타임캡슐 서비스',
               style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
-          SizedBox(height: 16),
-          _ServiceInfoRow('금융활동과 일상의 추억을 함께 저장', '은행 거래 내역과 함께 사진, 영상 기록'),
+          const SizedBox(height: 16),
+          const _ServiceInfoRow(
+              '금융활동과 일상의 추억을 함께 저장', '은행 거래 내역과 함께 사진, 영상 기록'),
           Center(
             child: Container(
-              padding: EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+              padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
               decoration: BoxDecoration(
-                color: Color(0xFFFFF8E1),
+                color: const Color(0xFFFFF8E1),
                 borderRadius: BorderRadius.circular(8),
               ),
-              child: Text(
+              child: const Text(
                 '7일 연속 타임캡슐 작성 시\n200P 추가적립',
                 style: TextStyle(
                   fontSize: 14,
@@ -424,8 +425,8 @@ class _ServiceInfoSection extends StatelessWidget {
               ),
             ),
           ),
-          _ServiceInfoRow('3개월, 6개월, 1년 등 보관 기간 설정', '원하는 미래 시점에 추억 확인'),
-          _ServiceInfoRow('단계별 서비스 확장 예정', '카드, 마이데이터 등 연계 예정'),
+          const _ServiceInfoRow('3개월, 6개월, 1년 등 보관 기간 설정', '원하는 미래 시점에 추억 확인'),
+          const _ServiceInfoRow('단계별 서비스 확장 예정', '카드, 마이데이터 등 연계 예정'),
         ],
       ),
     );
