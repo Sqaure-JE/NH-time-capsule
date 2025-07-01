@@ -4,6 +4,7 @@ import 'dart:io';
 import '../../../models/capsule.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'dart:typed_data';
+import '../home/widgets/emoji_selector.dart';
 
 class CapsuleCreateScreen extends StatelessWidget {
   const CapsuleCreateScreen({super.key});
@@ -27,6 +28,7 @@ class _CapsuleCreateScreenState extends State<_CapsuleCreateScreen> {
   int period = 0; // 0: 3개월, 1: 6개월, 2: 1년
   File? _firstMemoryImage;
   final _titleController = TextEditingController();
+  String selectedThemeEmoji = '⭐';
 
   @override
   void initState() {
@@ -76,7 +78,21 @@ class _CapsuleCreateScreenState extends State<_CapsuleCreateScreen> {
             ),
           if (!isPersonal || isPersonal) ...[
             const SizedBox(height: 12),
-            _TitleInputSection(controller: _titleController),
+            EmojiSelector(
+              title: '주제 선택하기 ✨',
+              selectedEmoji: selectedThemeEmoji,
+              emojis: EmojiCategories.capsuleThemes,
+              onSelected: (emoji) {
+                setState(() {
+                  selectedThemeEmoji = emoji;
+                });
+              },
+            ),
+            const SizedBox(height: 12),
+            _TitleInputSection(
+              controller: _titleController,
+              selectedEmoji: selectedThemeEmoji,
+            ),
             const SizedBox(height: 12),
             _PeriodSection(
               selected: period,
@@ -251,7 +267,11 @@ class _PersonalPurposeSection extends StatelessWidget {
 
 class _TitleInputSection extends StatelessWidget {
   final TextEditingController controller;
-  const _TitleInputSection({required this.controller});
+  final String selectedEmoji;
+  const _TitleInputSection({
+    required this.controller,
+    required this.selectedEmoji,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -265,8 +285,17 @@ class _TitleInputSection extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text('캡슐 제목을 입력하세요',
-              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15)),
+          Row(
+            children: [
+              Text(
+                selectedEmoji,
+                style: const TextStyle(fontSize: 20),
+              ),
+              const SizedBox(width: 8),
+              const Text('캡슐 제목을 입력하세요',
+                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15)),
+            ],
+          ),
           const SizedBox(height: 12),
           TextField(
             controller: controller,

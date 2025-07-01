@@ -4,10 +4,19 @@ import 'dart:io';
 import '../../../models/capsule.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'dart:typed_data';
+import '../home/widgets/emoji_selector.dart';
 
-class CapsuleWriteScreen extends StatelessWidget {
+class CapsuleWriteScreen extends StatefulWidget {
   final CapsuleType capsuleType;
   const CapsuleWriteScreen({super.key, required this.capsuleType});
+
+  @override
+  State<CapsuleWriteScreen> createState() => _CapsuleWriteScreenState();
+}
+
+class _CapsuleWriteScreenState extends State<CapsuleWriteScreen> {
+  String selectedMood = '😊';
+  String selectedSituation = '💰';
 
   @override
   Widget build(BuildContext context) {
@@ -17,8 +26,9 @@ class CapsuleWriteScreen extends StatelessWidget {
           icon: const Icon(Icons.arrow_back_ios_new_rounded),
           onPressed: () => Navigator.pop(context),
         ),
-        title:
-            Text(capsuleType == CapsuleType.personal ? '나의 금융 일기' : '모임 금융 일기'),
+        title: Text(widget.capsuleType == CapsuleType.personal
+            ? '나의 금융 일기'
+            : '모임 금융 일기'),
         centerTitle: true,
         actions: [
           IconButton(
@@ -33,17 +43,42 @@ class CapsuleWriteScreen extends StatelessWidget {
       backgroundColor: const Color(0xFFF8F8FA),
       body: ListView(
         padding: const EdgeInsets.symmetric(horizontal: 0, vertical: 0),
-        children: const [
-          _DateSection(),
-          SizedBox(height: 12),
-          _FinanceActivitySection(),
-          SizedBox(height: 18),
-          _DiarySection(),
-          SizedBox(height: 18),
-          _PhotoSection(),
-          SizedBox(height: 18),
-          _RewardSection(),
-          SizedBox(height: 24),
+        children: [
+          const _DateSection(),
+          const SizedBox(height: 12),
+          const _FinanceActivitySection(),
+          const SizedBox(height: 18),
+          EmojiSelector(
+            title: '기분 선택하기 😊',
+            selectedEmoji: selectedMood,
+            emojis: EmojiCategories.moods,
+            onSelected: (emoji) {
+              setState(() {
+                selectedMood = emoji;
+              });
+            },
+          ),
+          const SizedBox(height: 12),
+          EmojiSelector(
+            title: '내 상황 선택하기 💰',
+            selectedEmoji: selectedSituation,
+            emojis: EmojiCategories.financialSituations,
+            onSelected: (emoji) {
+              setState(() {
+                selectedSituation = emoji;
+              });
+            },
+          ),
+          const SizedBox(height: 18),
+          _DiarySection(
+            selectedMood: selectedMood,
+            selectedSituation: selectedSituation,
+          ),
+          const SizedBox(height: 18),
+          const _PhotoSection(),
+          const SizedBox(height: 18),
+          const _RewardSection(),
+          const SizedBox(height: 24),
         ],
       ),
       bottomNavigationBar: _BottomButtons(),
@@ -182,12 +217,19 @@ class _FinanceActivityItem extends StatelessWidget {
 }
 
 class _DiarySection extends StatelessWidget {
-  const _DiarySection();
+  final String selectedMood;
+  final String selectedSituation;
+
+  const _DiarySection({
+    required this.selectedMood,
+    required this.selectedSituation,
+  });
+
   @override
   Widget build(BuildContext context) {
     final args = ModalRoute.of(context)?.settings.arguments as Map?;
     final capsuleInfo = args?['capsuleInfo'] as Map?;
-    final title = capsuleInfo?['title'] as String? ?? '첫 월급 입금! 드디어 시작된 직장생활';
+    final title = capsuleInfo?['title'] as String? ?? '월요병 때문에 힘든 하루';
 
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 16),
@@ -199,8 +241,17 @@ class _DiarySection extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text('오늘의 일기',
-              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+          Row(
+            children: [
+              Text(
+                '$selectedMood $selectedSituation',
+                style: const TextStyle(fontSize: 20),
+              ),
+              const SizedBox(width: 8),
+              const Text('오늘의 일기',
+                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+            ],
+          ),
           const SizedBox(height: 12),
           const Text('제목',
               style: TextStyle(fontWeight: FontWeight.w600, fontSize: 13)),
@@ -223,7 +274,7 @@ class _DiarySection extends StatelessWidget {
           TextFormField(
             maxLines: 5,
             initialValue:
-                '오늘 드디어 첫 월급이 입금되었다! 취업 준비하며 고생했던 시간들이 주마등처럼 스쳐 지나간다. 이제 금융적으로 독립할 수 있게 되어서 너무 기쁘다. 월급의 절반은 미래를 위해 저축하고, 나머지는 현명하게 사용해야겠다. 6개월 후 이 타임캡슐을 열 때는 어떤 모습일까? 더 성장한 내가 되어 있길 바란다.',
+                '월요일이라 정말 피곤하고 힘들다. 주말이 너무 짧게 느껴지고 일주일이 또 시작된다는 생각에 우울하다. 스트레스를 풀고 싶어서 카페에서 비싼 음료를 마시고 배달음식도 시켰다. 계획 없이 소비하는 내 모습이 걱정되지만, 오늘만큼은 나를 위로해주고 싶었다.',
             decoration: InputDecoration(
               contentPadding:
                   const EdgeInsets.symmetric(horizontal: 12, vertical: 10),

@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
 import '../../providers/capsule_provider.dart';
+import '../home/widgets/emoji_selector.dart';
 
 class AddContentScreen extends StatefulWidget {
   final String capsuleId;
@@ -21,6 +22,7 @@ class _AddContentScreenState extends State<AddContentScreen> {
   final _textController = TextEditingController();
   File? _selectedImage;
   bool _isLoading = false;
+  String selectedMood = '😊';
 
   @override
   void dispose() {
@@ -40,7 +42,7 @@ class _AddContentScreenState extends State<AddContentScreen> {
     if (pickedFile != null) {
       final file = File(pickedFile.path);
       final fileSize = await file.length();
-      
+
       if (fileSize > 2 * 1024 * 1024) {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
@@ -68,10 +70,10 @@ class _AddContentScreenState extends State<AddContentScreen> {
 
     try {
       await context.read<CapsuleProvider>().addContent(
-        capsuleId: widget.capsuleId,
-        text: _textController.text,
-        imagePath: _selectedImage?.path,
-      );
+            capsuleId: widget.capsuleId,
+            text: _textController.text,
+            imagePath: _selectedImage?.path,
+          );
 
       if (mounted) {
         Navigator.pop(context);
@@ -124,6 +126,17 @@ class _AddContentScreenState extends State<AddContentScreen> {
               },
             ),
             const SizedBox(height: 16),
+            EmojiSelector(
+              title: '기분 선택하기 😊',
+              selectedEmoji: selectedMood,
+              emojis: EmojiCategories.moods,
+              onSelected: (emoji) {
+                setState(() {
+                  selectedMood = emoji;
+                });
+              },
+            ),
+            const SizedBox(height: 16),
             Card(
               child: Padding(
                 padding: const EdgeInsets.all(16),
@@ -131,7 +144,7 @@ class _AddContentScreenState extends State<AddContentScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      '이미지 추가 (선택사항)',
+                      '이미지/영상 추가 (선택사항)',
                       style: Theme.of(context).textTheme.titleMedium,
                     ),
                     const SizedBox(height: 8),
@@ -139,8 +152,8 @@ class _AddContentScreenState extends State<AddContentScreen> {
                       '• 최대 2MB까지 업로드 가능\n'
                       '• 이미지 추가 시 +20P 지급',
                       style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                        color: Colors.grey[600],
-                      ),
+                            color: Colors.grey[600],
+                          ),
                     ),
                     const SizedBox(height: 16),
                     if (_selectedImage != null) ...[
@@ -160,9 +173,8 @@ class _AddContentScreenState extends State<AddContentScreen> {
                       child: ElevatedButton.icon(
                         onPressed: _pickImage,
                         icon: const Icon(Icons.add_photo_alternate),
-                        label: Text(_selectedImage == null
-                            ? '이미지 선택하기'
-                            : '이미지 변경하기'),
+                        label: Text(
+                            _selectedImage == null ? '이미지 선택하기' : '이미지 변경하기'),
                       ),
                     ),
                   ],
@@ -191,4 +203,4 @@ class _AddContentScreenState extends State<AddContentScreen> {
       ),
     );
   }
-} 
+}

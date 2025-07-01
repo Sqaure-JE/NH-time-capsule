@@ -366,26 +366,50 @@ class _CapsuleOpenScreenState extends State<CapsuleOpenScreen>
   Widget _buildMemoryList() {
     final memories = _getFilteredMemories();
     return Column(
-      children: memories.map((memory) => _buildMemoryCard(memory)).toList(),
+      children: [
+        for (int i = 0; i < memories.length; i++) ...[
+          _buildMemoryCard(memories[i]),
+          if (i < memories.length - 1) const SizedBox(height: 32),
+        ],
+      ],
     );
   }
 
   List<Map<String, dynamic>> _getFilteredMemories() {
     final allMemories = [
       {
-        'type': 'text',
-        'icon': '✍️',
-        'title': '새해 다짐',
-        'date': '2024년 1월 1일',
-        'ago': '6개월 전',
-        'content':
-            '올해는 꼭 건강한 습관을 만들어서 지속하고 싶다. 매일 30분씩 운동하고, 독서도 꾸준히 하면서 내 자신을 더 발전시키는 한 해로 만들겠다.',
-        'tags': ['#새해다짐', '#건강', '#성장'],
+        'type': 'finance',
+        'icon': '📈',
+        'title': '투자 성과 기록',
+        'mood': '🤗',
+        'situation': '📈',
+        'financialSituation': '🤑',
+        'date': '2024년 3월 30일',
+        'ago': '4개월 전',
+        'content': '1분기 투자 수익률과 적금 목표 달성! 계획대로 진행되고 있어서 뿌듯하다.',
+        'financeData': [
+          {
+            'category': '주식 투자',
+            'icon': '💎',
+            'amount': '+1,850,000원',
+            'change': '+12.5%'
+          },
+          {
+            'category': '적금',
+            'icon': '🏦',
+            'amount': '+3,000,000원',
+            'change': '목표 완료'
+          },
+        ],
+        'tags': ['#투자성과', '#적금완료', '#목표달성'],
       },
       {
         'type': 'finance',
         'icon': '☕',
         'title': '건강한 아침 식사',
+        'mood': '😌',
+        'situation': '🍽️',
+        'financialSituation': '😊',
         'date': '2024년 5월 8일',
         'ago': '2개월 전',
         'content': '고모네 순대국에서 아침 식사를 했다. 농협카드로 결제하니 자동으로 포인트가 적립되었다.',
@@ -409,54 +433,57 @@ class _CapsuleOpenScreenState extends State<CapsuleOpenScreen>
         'type': 'photo',
         'icon': '🌸',
         'title': '벚꽃 여행',
+        'mood': '🥰',
+        'situation': '✈️',
         'date': '2024년 4월 15일',
         'ago': '3개월 전',
-        'content': '경주로 벚꽃 여행을 다녀왔다. 분홍빛 벚꽃이 흩날리는 길을 걸으며 힐링하는 시간이었다.',
+        'content': '경주 벚꽃 여행. 분홍빛 벚꽃 길을 걸으며 힐링하는 시간이었다.',
         'photos': ['🌸', '📷', '☕', '🌿'],
         'tags': ['#벚꽃', '#경주', '#힐링'],
       },
       {
         'type': 'finance',
-        'icon': '📈',
-        'title': '투자 성과 기록',
-        'date': '2024년 3월 30일',
-        'ago': '4개월 전',
-        'content': '1분기 투자 수익률과 적금 목표 달성을 기록했다.',
+        'icon': '😴',
+        'title': '월요병 스트레스 소비',
+        'mood': '😫',
+        'situation': '🥱',
+        'financialSituation': '😰',
+        'date': '2024년 6월 25일',
+        'ago': '1개월 전',
+        'content': '월요일 피곤함에 스트레스 소비. 커피, 배달음식, 온라인쇼핑까지...',
         'financeData': [
           {
-            'category': '주식 투자',
-            'icon': '💎',
-            'amount': '+1,850,000원',
-            'change': '+12.5%'
+            'category': '스타벅스',
+            'icon': '☕',
+            'amount': '-6,500원',
+            'change': 'NH 체크카드'
           },
           {
-            'category': '적금',
-            'icon': '🏦',
-            'amount': '+3,000,000원',
-            'change': '목표 완료'
+            'category': '배달음식',
+            'icon': '🍕',
+            'amount': '-18,000원',
+            'change': '치킨+콜라'
+          },
+          {
+            'category': '온라인쇼핑',
+            'icon': '🛒',
+            'amount': '-45,000원',
+            'change': '스트레스 쇼핑'
           },
         ],
-        'tags': ['#투자성과', '#적금완료', '#목표달성'],
+        'tags': ['#월요병', '#스트레스소비', '#반성'],
+        'noCardRecommendation': true,
       },
       {
         'type': 'text',
-        'icon': '💭',
-        'title': '졸업 소감',
-        'date': '2024년 2월 20일',
-        'ago': '5개월 전',
-        'content':
-            '드디어 졸업했다! 4년간의 대학생활이 끝났다는 게 아직도 실감이 안 난다. 힘들었지만 값진 경험들이었고, 이제 새로운 시작을 앞두고 있다.',
-        'tags': ['#졸업', '#새시작', '#성취'],
-      },
-      {
-        'type': 'photo',
-        'icon': '🎓',
-        'title': '졸업식 사진',
-        'date': '2024년 2월 15일',
-        'ago': '5개월 전',
-        'content': '가족들과 함께한 졸업식. 힘들었던 시간들이 모두 보람으로 바뀌는 순간이었다.',
-        'photos': ['🎓', '👨‍👩‍👧‍👦', '📸', '🌟'],
-        'tags': ['#졸업식', '#가족', '#감동'],
+        'icon': '✍️',
+        'title': '새해 다짐',
+        'mood': '😊',
+        'situation': '🎯',
+        'date': '2024년 1월 1일',
+        'ago': '6개월 전',
+        'content': '건강한 습관 만들기! 매일 운동하고 독서하며 성장하는 한 해로 만들자.',
+        'tags': ['#새해다짐', '#건강', '#성장'],
       },
     ];
 
@@ -470,18 +497,17 @@ class _CapsuleOpenScreenState extends State<CapsuleOpenScreen>
 
   Widget _buildMemoryCard(Map<String, dynamic> memory) {
     return Container(
-      margin: const EdgeInsets.only(bottom: 20),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(24),
+        borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.08),
-            blurRadius: 20,
-            offset: const Offset(0, 4),
+            color: Colors.black.withOpacity(0.06),
+            blurRadius: 15,
+            offset: const Offset(0, 3),
           ),
         ],
-        border: Border.all(color: const Color(0xFFF1F5F9)),
+        border: Border.all(color: const Color(0xFFF1F5F9), width: 1),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -507,29 +533,29 @@ class _CapsuleOpenScreenState extends State<CapsuleOpenScreen>
     }
 
     return Container(
-      padding: const EdgeInsets.all(20),
+      padding: const EdgeInsets.all(16),
       decoration: const BoxDecoration(
         gradient: LinearGradient(
           colors: [Color(0xFFF8FAFC), Color(0xFFF1F5F9)],
         ),
         borderRadius: BorderRadius.only(
-          topLeft: Radius.circular(24),
-          topRight: Radius.circular(24),
+          topLeft: Radius.circular(20),
+          topRight: Radius.circular(20),
         ),
       ),
       child: Row(
         children: [
           Container(
-            width: 50,
-            height: 50,
+            width: 44,
+            height: 44,
             decoration: BoxDecoration(
               color: iconColor,
-              borderRadius: BorderRadius.circular(16),
+              borderRadius: BorderRadius.circular(14),
             ),
             child: Center(
               child: Text(
                 memory['icon'],
-                style: const TextStyle(fontSize: 24),
+                style: const TextStyle(fontSize: 20),
               ),
             ),
           ),
@@ -541,12 +567,109 @@ class _CapsuleOpenScreenState extends State<CapsuleOpenScreen>
                 Text(
                   memory['title'],
                   style: const TextStyle(
-                    fontSize: 18,
+                    fontSize: 16,
                     fontWeight: FontWeight.w700,
                     color: Color(0xFF1E293B),
                   ),
                 ),
-                const SizedBox(height: 4),
+                const SizedBox(height: 6),
+                Row(
+                  children: [
+                    if (memory['mood'] != null) ...[
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 8,
+                          vertical: 4,
+                        ),
+                        decoration: BoxDecoration(
+                          color: Colors.pink.withOpacity(0.15),
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Text(
+                              memory['mood'],
+                              style: const TextStyle(fontSize: 14),
+                            ),
+                            const SizedBox(width: 4),
+                            const Text(
+                              '기분',
+                              style: TextStyle(
+                                fontSize: 11,
+                                color: Color(0xFF64748B),
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                    ],
+                    if (memory['situation'] != null) ...[
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 8,
+                          vertical: 4,
+                        ),
+                        decoration: BoxDecoration(
+                          color: Colors.blue.withOpacity(0.15),
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Text(
+                              memory['situation'],
+                              style: const TextStyle(fontSize: 14),
+                            ),
+                            const SizedBox(width: 4),
+                            const Text(
+                              '상황',
+                              style: TextStyle(
+                                fontSize: 11,
+                                color: Color(0xFF64748B),
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                    ],
+                    if (memory['financialSituation'] != null) ...[
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 8,
+                          vertical: 4,
+                        ),
+                        decoration: BoxDecoration(
+                          color: Colors.green.withOpacity(0.15),
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Text(
+                              memory['financialSituation'],
+                              style: const TextStyle(fontSize: 14),
+                            ),
+                            const SizedBox(width: 4),
+                            const Text(
+                              '금융',
+                              style: TextStyle(
+                                fontSize: 11,
+                                color: Color(0xFF64748B),
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ],
+                ),
+                const SizedBox(height: 6),
                 Text(
                   memory['date'],
                   style: const TextStyle(
@@ -580,7 +703,7 @@ class _CapsuleOpenScreenState extends State<CapsuleOpenScreen>
 
   Widget _buildMemoryContent(Map<String, dynamic> memory) {
     return Padding(
-      padding: const EdgeInsets.all(20),
+      padding: const EdgeInsets.all(16),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -590,12 +713,14 @@ class _CapsuleOpenScreenState extends State<CapsuleOpenScreen>
           Text(
             memory['content'],
             style: const TextStyle(
-              fontSize: 16,
+              fontSize: 15,
               color: Color(0xFF475569),
-              height: 1.6,
+              height: 1.5,
             ),
+            maxLines: 3,
+            overflow: TextOverflow.ellipsis,
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: 12),
           _buildTags(memory['tags']),
         ],
       ),
@@ -745,7 +870,8 @@ class _CapsuleOpenScreenState extends State<CapsuleOpenScreen>
             ],
           ),
         ),
-        _buildFinanceRecommendationBanner(memory),
+        if (memory['noCardRecommendation'] != true)
+          _buildFinanceRecommendationBanner(memory),
       ],
     );
   }
@@ -1066,20 +1192,20 @@ class _CapsuleOpenScreenState extends State<CapsuleOpenScreen>
 
   Widget _buildTags(List<String> tags) {
     return Wrap(
-      spacing: 8,
-      runSpacing: 8,
+      spacing: 6,
+      runSpacing: 6,
       children: tags.map((tag) {
         return Container(
-          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
           decoration: BoxDecoration(
             color: const Color(0xFFF1F5F9),
-            borderRadius: BorderRadius.circular(20),
+            borderRadius: BorderRadius.circular(12),
           ),
           child: Text(
             tag,
             style: const TextStyle(
               color: Color(0xFF475569),
-              fontSize: 13,
+              fontSize: 11,
               fontWeight: FontWeight.w600,
             ),
           ),
@@ -1089,6 +1215,163 @@ class _CapsuleOpenScreenState extends State<CapsuleOpenScreen>
   }
 
   Widget _buildFinancialInsightBanner() {
+    return Column(
+      children: [
+        // 감정 분석 섹션
+        _buildEmotionAnalysisCard(),
+        const SizedBox(height: 16),
+        // 금융 데이터 섹션
+        _buildFinancialDataCard(),
+      ],
+    );
+  }
+
+  Widget _buildEmotionAnalysisCard() {
+    return Container(
+      padding: const EdgeInsets.all(24),
+      decoration: BoxDecoration(
+        gradient: const LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [Color(0xFFFF6B9D), Color(0xFFFFA5A5)],
+        ),
+        borderRadius: BorderRadius.circular(24),
+        boxShadow: [
+          BoxShadow(
+            color: const Color(0xFFFF6B9D).withOpacity(0.3),
+            blurRadius: 20,
+            offset: const Offset(0, 8),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: Colors.white.withOpacity(0.2),
+                  borderRadius: BorderRadius.circular(16),
+                ),
+                child: const Text(
+                  '😊',
+                  style: TextStyle(fontSize: 28),
+                ),
+              ),
+              const SizedBox(width: 16),
+              const Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      '💖 감정 분석 리포트',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    SizedBox(height: 4),
+                    Text(
+                      '타임캡슐 기간 동안의 감정 변화를 분석했어요',
+                      style: TextStyle(
+                        color: Colors.white70,
+                        fontSize: 14,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 20),
+          Row(
+            children: [
+              Expanded(
+                child: _buildEmotionCard(
+                  emotion: '😊',
+                  title: '행복',
+                  percentage: '45%',
+                  subtitle: '가장 많은 날',
+                ),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: _buildEmotionCard(
+                  emotion: '🥰',
+                  title: '사랑',
+                  percentage: '25%',
+                  subtitle: '월급날 위주',
+                ),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: _buildEmotionCard(
+                  emotion: '😰',
+                  title: '걱정',
+                  percentage: '20%',
+                  subtitle: '지출 많은 날',
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildEmotionCard({
+    required String emotion,
+    required String title,
+    required String percentage,
+    required String subtitle,
+  }) {
+    return Container(
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: Colors.white.withOpacity(0.15),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: Colors.white.withOpacity(0.2)),
+      ),
+      child: Column(
+        children: [
+          Text(
+            emotion,
+            style: const TextStyle(fontSize: 20),
+          ),
+          const SizedBox(height: 6),
+          Text(
+            percentage,
+            style: const TextStyle(
+              color: Colors.white,
+              fontSize: 16,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          const SizedBox(height: 2),
+          Text(
+            title,
+            style: const TextStyle(
+              color: Colors.white,
+              fontSize: 11,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+          Text(
+            subtitle,
+            style: const TextStyle(
+              color: Colors.white70,
+              fontSize: 9,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildFinancialDataCard() {
     return Container(
       padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
@@ -1154,19 +1437,41 @@ class _CapsuleOpenScreenState extends State<CapsuleOpenScreen>
             children: [
               Expanded(
                 child: _buildInsightCard(
-                  icon: '💎',
+                  icon: '💸',
+                  title: '총 소비',
+                  value: '2,450만원',
+                  subtitle: '월평균 408만원',
+                ),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: _buildInsightCard(
+                  icon: '💰',
+                  title: '총 저축',
+                  value: '1,800만원',
+                  subtitle: '목표 달성 100%',
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 12),
+          Row(
+            children: [
+              Expanded(
+                child: _buildInsightCard(
+                  icon: '📈',
                   title: '투자 수익률',
                   value: '+12.5%',
-                  subtitle: '목표 대비 125%',
+                  subtitle: '평균 대비 +3.2%',
                 ),
               ),
               const SizedBox(width: 12),
               Expanded(
                 child: _buildInsightCard(
                   icon: '🎯',
-                  title: '저축 달성률',
-                  value: '100%',
-                  subtitle: '목표 완료!',
+                  title: '월급 대비',
+                  value: '저축 73%',
+                  subtitle: '우수한 관리!',
                 ),
               ),
             ],
@@ -1229,72 +1534,243 @@ class _CapsuleOpenScreenState extends State<CapsuleOpenScreen>
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
-          '💡 맞춤 금융상품 추천',
-          style: TextStyle(
-            fontSize: 20,
-            fontWeight: FontWeight.bold,
-            color: Color(0xFF1E293B),
+        Container(
+          padding: const EdgeInsets.all(20),
+          decoration: BoxDecoration(
+            gradient: const LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: [Color(0xFF4F46E5), Color(0xFF7C3AED)],
+            ),
+            borderRadius: BorderRadius.circular(20),
+            boxShadow: [
+              BoxShadow(
+                color: const Color(0xFF4F46E5).withOpacity(0.3),
+                blurRadius: 15,
+                offset: const Offset(0, 8),
+              ),
+            ],
           ),
-        ),
-        const SizedBox(height: 4),
-        const Text(
-          '과거 기록을 바탕으로 분석한 최적의 상품을 추천드려요',
-          style: TextStyle(
-            fontSize: 14,
-            color: Color(0xFF64748B),
-          ),
-        ),
-        const SizedBox(height: 16),
-        SingleChildScrollView(
-          scrollDirection: Axis.horizontal,
-          child: Row(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              _buildRecommendationCard(
-                icon: '🎯',
-                title: 'NH 목돈마련 적금',
-                subtitle: '안정형 저축자',
-                description: '적금 목표를 달성하신 고객님께 한 단계 높은 상품',
-                expectedReturn: '연 3.5%',
-                riskLevel: '안전',
-                color: const Color(0xFF10B981),
+              const Row(
+                children: [
+                  Text(
+                    '💗',
+                    style: TextStyle(fontSize: 24),
+                  ),
+                  SizedBox(width: 12),
+                  Text(
+                    '감정과 금융이 만난 맞춤 추천',
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                    ),
+                  ),
+                ],
               ),
-              const SizedBox(width: 16),
-              _buildRecommendationCard(
-                icon: '🏠',
-                title: 'NH 주택청약종합저축',
-                subtitle: '미래 준비형',
-                description: '안정적인 자산 관리로 내 집 마련의 첫걸음',
-                expectedReturn: '연 2.8%',
-                riskLevel: '안전',
-                color: const Color(0xFF8B5CF6),
+              const SizedBox(height: 8),
+              const Text(
+                '당신의 감정 패턴과 금융 행동을 분석한 특별한 추천',
+                style: TextStyle(
+                  fontSize: 14,
+                  color: Colors.white70,
+                ),
               ),
-              const SizedBox(width: 16),
-              _buildRecommendationCard(
-                icon: '🚀',
-                title: 'NH투자증권 ETF',
-                subtitle: '성장형 투자자',
-                description: '꾸준한 투자 성과를 보여주시는 고객님께 추천',
-                expectedReturn: '연 8-12%',
-                riskLevel: '중위험',
-                color: const Color(0xFF3B82F6),
+              const SizedBox(height: 20),
+              // 감정-금융 연관성 카드들
+              Row(
+                children: [
+                  Expanded(
+                    child: _buildEmotionFinanceCard(
+                      emotion: '😊',
+                      title: '행복할 때 저축률 UP!',
+                      description: '월급날 기분 좋을 때 더 많이 저축하시네요',
+                      product: 'NH 목표달성적금',
+                      benefit: '행복보너스 연0.2%p',
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: _buildEmotionFinanceCard(
+                      emotion: '😰',
+                      title: '걱정될 때 보호 필요',
+                      description: '지출 걱정할 때 보험 관심 증가',
+                      product: 'NH올원비상금통장',
+                      benefit: '즉시이체 수수료 면제',
+                    ),
+                  ),
+                ],
               ),
-              const SizedBox(width: 16),
-              _buildRecommendationCard(
-                icon: '💳',
-                title: '농협카드 미미카드',
-                subtitle: '스마트 소비형',
-                description: '일상 소비에서 포인트 적립과 혜택을 원하는 고객님께 추천',
-                expectedReturn: '최대 2% 적립',
-                riskLevel: '혜택',
-                color: const Color(0xFFEC4899),
+              const SizedBox(height: 16),
+              // 간단한 추천 상품
+              Container(
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: Colors.white.withOpacity(0.15),
+                  borderRadius: BorderRadius.circular(16),
+                ),
+                child: Column(
+                  children: [
+                    const Row(
+                      children: [
+                        Text(
+                          '🎯',
+                          style: TextStyle(fontSize: 20),
+                        ),
+                        SizedBox(width: 8),
+                        Text(
+                          '오늘의 추천',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 12),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: _buildQuickRecommendCard(
+                            '💳',
+                            'NH올원카드',
+                            '연회비 영구면제',
+                          ),
+                        ),
+                        const SizedBox(width: 8),
+                        Expanded(
+                          child: _buildQuickRecommendCard(
+                            '📈',
+                            'NH투자증권 ETF',
+                            '국내외 분산투자',
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
               ),
             ],
           ),
         ),
-        const SizedBox(height: 20),
-        _buildNextStepBanner(),
       ],
+    );
+  }
+
+  Widget _buildEmotionFinanceCard({
+    required String emotion,
+    required String title,
+    required String description,
+    required String product,
+    required String benefit,
+  }) {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.white.withOpacity(0.15),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: Colors.white.withOpacity(0.2)),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Text(
+                emotion,
+                style: const TextStyle(fontSize: 20),
+              ),
+              const SizedBox(width: 8),
+              Expanded(
+                child: Text(
+                  title,
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 12,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 8),
+          Text(
+            description,
+            style: const TextStyle(
+              color: Colors.white70,
+              fontSize: 10,
+            ),
+          ),
+          const SizedBox(height: 8),
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+            decoration: BoxDecoration(
+              color: Colors.white.withOpacity(0.2),
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  product,
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 10,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                Text(
+                  benefit,
+                  style: const TextStyle(
+                    color: Colors.white70,
+                    fontSize: 9,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildQuickRecommendCard(String icon, String title, String subtitle) {
+    return Container(
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: Colors.white.withOpacity(0.1),
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Column(
+        children: [
+          Text(
+            icon,
+            style: const TextStyle(fontSize: 18),
+          ),
+          const SizedBox(height: 4),
+          Text(
+            title,
+            style: const TextStyle(
+              color: Colors.white,
+              fontSize: 11,
+              fontWeight: FontWeight.bold,
+            ),
+            textAlign: TextAlign.center,
+          ),
+          Text(
+            subtitle,
+            style: const TextStyle(
+              color: Colors.white70,
+              fontSize: 9,
+            ),
+            textAlign: TextAlign.center,
+          ),
+        ],
+      ),
     );
   }
 

@@ -195,7 +195,7 @@ class _DiarySection extends StatelessWidget {
               style: TextStyle(fontWeight: FontWeight.w600, fontSize: 13)),
           const SizedBox(height: 4),
           TextFormField(
-            initialValue: '첫 월급 입금! 드디어 시작된 직장생활',
+            initialValue: '월요병 때문에 힘든 하루',
             decoration: InputDecoration(
               contentPadding:
                   const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
@@ -212,7 +212,7 @@ class _DiarySection extends StatelessWidget {
           TextFormField(
             maxLines: 5,
             initialValue:
-                '오늘 드디어 첫 월급이 입금되었다! 취업 준비하며 고생했던 시간들이 주마등처럼 스쳐 지나간다. 이제 금융적으로 독립할 수 있게 되어서 너무 기쁘다. 월급의 절반은 미래를 위해 저축하고, 나머지는 현명하게 사용해야겠다. 6개월 후 이 타임캡슐을 열 때는 어떤 모습일까? 더 성장한 내가 되어 있길 바란다.',
+                '월요일이라 정말 피곤하고 힘들다. 주말이 너무 짧게 느껴지고 일주일이 또 시작된다는 생각에 우울하다. 스트레스를 풀고 싶어서 카페에서 비싼 음료를 마시고 배달음식도 시켰다. 계획 없이 소비하는 내 모습이 걱정되지만, 오늘만큼은 나를 위로해주고 싶었다.',
             decoration: InputDecoration(
               contentPadding:
                   const EdgeInsets.symmetric(horizontal: 12, vertical: 10),

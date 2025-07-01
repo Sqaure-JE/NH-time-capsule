@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../../models/capsule.dart';
+import 'widgets/capsule_card.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -53,15 +54,15 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
     {
       'capsule': Capsule(
         id: '3',
-        title: '완료된 타임캡슐',
+        title: '나의 첫 여행 계획',
         type: CapsuleType.personal,
         members: ['user1'],
-        createdAt: DateTime.now(),
+        createdAt: DateTime.now().subtract(const Duration(days: 30)),
         openDate: DateTime.now(),
-        points: 0,
+        points: 150,
         isOpened: false,
       ),
-      'contentCount': 1,
+      'contentCount': 5,
     },
   ];
 
@@ -164,26 +165,39 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
         backgroundColor: Colors.white,
         foregroundColor: Colors.black,
       ),
-      backgroundColor: const Color(0xFFF8F8FA),
-      body: SafeArea(
-        child: SingleChildScrollView(
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                _TopBanner(),
-                const SizedBox(height: 24),
-                const _CapsuleTypeSection(),
-                const SizedBox(height: 24),
-                _ServiceInfoSection(),
-                const SizedBox(height: 24),
-                _MyCapsulesSection(
-                    capsules: _capsules, onContentAdded: _increaseContentCount),
-                const SizedBox(height: 16),
-                _PointBanner(),
-                const SizedBox(height: 80),
-              ],
+      body: Container(
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [
+              Color(0xFFF8F9FF),
+              Color(0xFFE8F4FD),
+              Color(0xFFF0F8FF),
+            ],
+          ),
+        ),
+        child: SafeArea(
+          child: SingleChildScrollView(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  _TopBanner(),
+                  const SizedBox(height: 24),
+                  const _CapsuleTypeSection(),
+                  const SizedBox(height: 24),
+                  _ServiceInfoSection(),
+                  const SizedBox(height: 24),
+                  _MyCapsulesSection(
+                      capsules: _capsules,
+                      onContentAdded: _increaseContentCount),
+                  const SizedBox(height: 16),
+                  _PointBanner(),
+                  const SizedBox(height: 80),
+                ],
+              ),
             ),
           ),
         ),
@@ -460,168 +474,60 @@ class _MyCapsulesSection extends StatelessWidget {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text('나의 타임캡슐',
-                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+              Text('나의 타임캡슐 🥚',
+                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
             ],
           ),
         ),
-        const SizedBox(height: 8),
-        ...capsules
-            .map((c) => _MyCapsuleCard(
-                  capsule: c['capsule'] as Capsule,
-                  contentCount: c['contentCount'] as int,
-                  onContentAdded: onContentAdded,
-                ))
-            .toList(),
+        const SizedBox(height: 16),
+        Container(
+          height: 200,
+          child: ListView.builder(
+            scrollDirection: Axis.horizontal,
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            itemCount: capsules.length,
+            itemBuilder: (context, index) {
+              final capsuleData = capsules[index];
+              return Container(
+                width: 140,
+                margin: const EdgeInsets.only(right: 12),
+                child: EggCapsuleCard(
+                  capsule: capsuleData['capsule'] as Capsule,
+                  contentCount: capsuleData['contentCount'] as int,
+                  onTap: () =>
+                      _handleCapsuleTap(context, capsuleData, onContentAdded),
+                ),
+              );
+            },
+          ),
+        ),
       ],
     );
   }
-}
 
-class _MyCapsuleCard extends StatelessWidget {
-  final Capsule capsule;
-  final int contentCount;
-  final void Function(String capsuleId)? onContentAdded;
-
-  const _MyCapsuleCard({
-    required this.capsule,
-    required this.contentCount,
-    this.onContentAdded,
-  });
-
-  @override
-  Widget build(BuildContext context) {
+  void _handleCapsuleTap(BuildContext context, Map<String, dynamic> capsuleData,
+      void Function(String capsuleId)? onContentAdded) async {
+    final capsule = capsuleData['capsule'] as Capsule;
     final dDay = capsule.openDate.difference(DateTime.now()).inDays;
-    final color = capsule.type == CapsuleType.personal
-        ? const Color(0xFF4CAF50)
-        : const Color(0xFF3B7BFF);
-
-    // 캡슐이 열기 가능한지 확인 (D-Day가 0 이하이고 아직 열리지 않은 경우)
     final isOpenable = dDay <= 0 && !capsule.isOpened;
 
-    return GestureDetector(
-      onTap: () async {
-        if (isOpenable) {
-          // 캡슐 열기가 가능한 경우 detail 화면으로 이동
-          final result = await Navigator.pushNamed(context, '/detail',
-              arguments: capsule.id);
-          if (result == 'contentAdded' && onContentAdded != null) {
-            onContentAdded!(capsule.id);
-          }
-        } else {
-          // 캡슐 열기가 불가능한 경우 금융일기 작성 화면으로 이동
-          await Navigator.pushNamed(context, '/capsule_write', arguments: {
-            'capsuleType': capsule.type,
-            'capsuleInfo': {
-              'id': capsule.id,
-              'title': capsule.title,
-            }
-          });
+    if (isOpenable) {
+      // 캡슐 열기가 가능한 경우 캡슐 열기 화면으로 이동
+      final result = await Navigator.pushNamed(context, '/capsule_open',
+          arguments: capsule.id);
+      if (result == 'contentAdded' && onContentAdded != null) {
+        onContentAdded!(capsule.id);
+      }
+    } else {
+      // 캡슐 열기가 불가능한 경우 금융일기 작성 화면으로 이동
+      await Navigator.pushNamed(context, '/capsule_write', arguments: {
+        'capsuleType': capsule.type,
+        'capsuleInfo': {
+          'id': capsule.id,
+          'title': capsule.title,
         }
-      },
-      child: Container(
-        margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
-        padding: const EdgeInsets.all(18),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(16),
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                CircleAvatar(
-                  backgroundColor: color.withAlpha(25), // 0.1 * 255 ≈ 25
-                  child: Icon(
-                    capsule.type == CapsuleType.personal
-                        ? Icons.visibility
-                        : Icons.groups,
-                    color: color,
-                  ),
-                ),
-                const SizedBox(width: 16),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(capsule.title,
-                          style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 15,
-                              color: color)),
-                      const SizedBox(height: 4),
-                      Text(
-                          '${capsule.openDate.year}년 ${capsule.openDate.month}월 ${capsule.openDate.day}일 오픈 예정',
-                          style: const TextStyle(fontSize: 13)),
-                      const SizedBox(height: 2),
-                      Text('마지막 추억 저장: 2025.09.0${capsule.id}',
-                          style: const TextStyle(
-                              fontSize: 12, color: Colors.black54)),
-                    ],
-                  ),
-                ),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.end,
-                  children: [
-                    Text(dDay > 0 ? 'D-$dDay' : 'D-DAY',
-                        style: TextStyle(
-                            color: color, fontWeight: FontWeight.bold)),
-                    const SizedBox(height: 8),
-                    Text('콘텐츠 $contentCount개',
-                        style: const TextStyle(
-                            fontSize: 12, color: Colors.deepPurple)),
-                  ],
-                ),
-              ],
-            ),
-            if (isOpenable)
-              Padding(
-                padding: const EdgeInsets.only(top: 8.0),
-                child: ElevatedButton(
-                  onPressed: () async {
-                    final result = await Navigator.pushNamed(
-                        context, '/capsule_open',
-                        arguments: capsule.id);
-                    if (result == 'contentAdded' && onContentAdded != null) {
-                      onContentAdded!(capsule.id);
-                    }
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: color,
-                    foregroundColor: Colors.white,
-                    minimumSize: const Size(double.infinity, 40),
-                  ),
-                  child: const Text('타임캡슐 열기'),
-                ),
-              )
-            else
-              Padding(
-                padding: const EdgeInsets.only(top: 8.0),
-                child: Container(
-                  width: double.infinity,
-                  height: 40,
-                  decoration: BoxDecoration(
-                    color: Colors.grey[100],
-                    borderRadius: BorderRadius.circular(8),
-                    border: Border.all(color: Colors.grey[300]!),
-                  ),
-                  child: Center(
-                    child: Text(
-                      '클릭하여 금융일기 작성하기',
-                      style: TextStyle(
-                        color: Colors.grey[600],
-                        fontWeight: FontWeight.w500,
-                        fontSize: 14,
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-          ],
-        ),
-      ),
-    );
+      });
+    }
   }
 }
 
