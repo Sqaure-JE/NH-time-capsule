@@ -16,9 +16,9 @@ class _CreateScreenState extends State<CreateScreen> {
   final _groupNameController = TextEditingController();
   final _membersController = TextEditingController();
   final _contentController = TextEditingController();
-  
+
   CapsuleType _selectedType = CapsuleType.personal;
-  DateTime _selectedDate = DateTime.now().add(const Duration(days: 7));
+  DateTime _selectedDate = DateTime(2025, 10, 1);
 
   @override
   void dispose() {
@@ -48,7 +48,9 @@ class _CreateScreenState extends State<CreateScreen> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Text('타입 선택', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                      const Text('타입 선택',
+                          style: TextStyle(
+                              fontSize: 16, fontWeight: FontWeight.bold)),
                       RadioListTile<CapsuleType>(
                         title: const Text('개인'),
                         value: CapsuleType.personal,
@@ -74,7 +76,7 @@ class _CreateScreenState extends State<CreateScreen> {
                 ),
               ),
               const SizedBox(height: 16),
-              
+
               // 제목 입력
               TextFormField(
                 controller: _titleController,
@@ -90,7 +92,7 @@ class _CreateScreenState extends State<CreateScreen> {
                 },
               ),
               const SizedBox(height: 16),
-              
+
               // 그룹 정보 (그룹 타입일 때만)
               if (_selectedType == CapsuleType.group) ...[
                 TextFormField(
@@ -100,7 +102,8 @@ class _CreateScreenState extends State<CreateScreen> {
                     border: OutlineInputBorder(),
                   ),
                   validator: (value) {
-                    if (_selectedType == CapsuleType.group && (value == null || value.isEmpty)) {
+                    if (_selectedType == CapsuleType.group &&
+                        (value == null || value.isEmpty)) {
                       return '그룹 이름을 입력해주세요';
                     }
                     return null;
@@ -116,19 +119,21 @@ class _CreateScreenState extends State<CreateScreen> {
                 ),
                 const SizedBox(height: 16),
               ],
-              
+
               // 날짜 선택
               Card(
                 child: ListTile(
                   title: const Text('개봉 날짜'),
-                  subtitle: Text('${_selectedDate.year}-${_selectedDate.month.toString().padLeft(2, '0')}-${_selectedDate.day.toString().padLeft(2, '0')}'),
+                  subtitle: Text(
+                      '${_selectedDate.year}-${_selectedDate.month.toString().padLeft(2, '0')}-${_selectedDate.day.toString().padLeft(2, '0')}'),
                   trailing: const Icon(Icons.calendar_today),
                   onTap: () async {
                     final date = await showDatePicker(
                       context: context,
                       initialDate: _selectedDate,
                       firstDate: DateTime.now().add(const Duration(days: 1)),
-                      lastDate: DateTime.now().add(const Duration(days: 365 * 5)),
+                      lastDate:
+                          DateTime.now().add(const Duration(days: 365 * 5)),
                     );
                     if (date != null) {
                       setState(() {
@@ -139,7 +144,7 @@ class _CreateScreenState extends State<CreateScreen> {
                 ),
               ),
               const SizedBox(height: 16),
-              
+
               // 첫 번째 콘텐츠
               Expanded(
                 child: TextFormField(
@@ -155,7 +160,7 @@ class _CreateScreenState extends State<CreateScreen> {
                 ),
               ),
               const SizedBox(height: 16),
-              
+
               // 생성 버튼
               SizedBox(
                 width: double.infinity,
@@ -174,21 +179,29 @@ class _CreateScreenState extends State<CreateScreen> {
   void _createCapsule() async {
     if (_formKey.currentState!.validate()) {
       final provider = context.read<CapsuleProvider>();
-      
+
       final members = _selectedType == CapsuleType.group
-          ? _membersController.text.split(',').map((e) => e.trim()).where((e) => e.isNotEmpty).toList()
+          ? _membersController.text
+              .split(',')
+              .map((e) => e.trim())
+              .where((e) => e.isNotEmpty)
+              .toList()
           : <String>[];
 
       try {
         await provider.createCapsule(
           title: _titleController.text,
           type: _selectedType,
-          groupName: _selectedType == CapsuleType.group ? _groupNameController.text : null,
+          groupName: _selectedType == CapsuleType.group
+              ? _groupNameController.text
+              : null,
           members: members,
           openDate: _selectedDate,
-          firstContent: _contentController.text.isNotEmpty ? _contentController.text : null,
+          firstContent: _contentController.text.isNotEmpty
+              ? _contentController.text
+              : null,
         );
-        
+
         if (mounted) {
           Navigator.pop(context);
         }
@@ -201,4 +214,4 @@ class _CreateScreenState extends State<CreateScreen> {
       }
     }
   }
-} 
+}

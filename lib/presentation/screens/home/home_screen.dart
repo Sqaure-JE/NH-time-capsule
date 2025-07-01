@@ -57,7 +57,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
         type: CapsuleType.personal,
         members: ['user1'],
         createdAt: DateTime.now(),
-        openDate: DateTime(2025, 10, 9),
+        openDate: DateTime.now(),
         points: 0,
         isOpened: false,
       ),

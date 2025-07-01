@@ -617,7 +617,7 @@ class _BottomButtons extends StatelessWidget {
                             createdAt:
                                 capsuleInfo['createdAt'] ?? DateTime.now(),
                             openDate: capsuleInfo['openDate'] ??
-                                DateTime.now().add(const Duration(days: 30)),
+                                DateTime(2025, 10, 1),
                             points: capsuleInfo['points'] ?? 0,
                             isOpened: capsuleInfo['isOpened'] ?? false,
                           ),
