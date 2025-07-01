@@ -31,7 +31,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
         type: CapsuleType.personal,
         members: ['user1'],
         createdAt: DateTime(2025, 5, 1),
-        openDate: DateTime(2025, 8, 12),
+        openDate: DateTime(2025, 10, 15),
         points: 0,
         isOpened: false,
       ),
@@ -53,11 +53,11 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
     {
       'capsule': Capsule(
         id: '3',
-        title: '내가 쓴 최근 타임캡슐',
+        title: '완료된 타임캡슐',
         type: CapsuleType.personal,
         members: ['user1'],
         createdAt: DateTime.now(),
-        openDate: DateTime.now().add(const Duration(days: 100)),
+        openDate: DateTime(2025, 10, 9),
         points: 0,
         isOpened: false,
       ),
@@ -545,7 +545,7 @@ class _MyCapsuleCard extends StatelessWidget {
                           '${capsule.openDate.year}년 ${capsule.openDate.month}월 ${capsule.openDate.day}일 오픈 예정',
                           style: const TextStyle(fontSize: 13)),
                       const SizedBox(height: 2),
-                      Text('마지막 추억 저장: 2025.05.0${capsule.id}',
+                      Text('마지막 추억 저장: 2025.09.0${capsule.id}',
                           style: const TextStyle(
                               fontSize: 12, color: Colors.black54)),
                     ],
@@ -554,7 +554,7 @@ class _MyCapsuleCard extends StatelessWidget {
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.end,
                   children: [
-                    Text('D-${dDay > 0 ? dDay : 0}',
+                    Text(dDay > 0 ? 'D-$dDay' : 'D-DAY',
                         style: TextStyle(
                             color: color, fontWeight: FontWeight.bold)),
                     const SizedBox(height: 8),
