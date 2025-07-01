@@ -62,7 +62,6 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
         isOpened: false,
       ),
       'contentCount': 1,
-      'showOpenButton': true,
     },
   ];
 
@@ -399,16 +398,15 @@ class _ServiceInfoSection extends StatelessWidget {
         color: Colors.white,
         borderRadius: BorderRadius.circular(16),
       ),
-      child: Column(
+      child: const Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text('금융 타임캡슐 서비스',
+          Text('금융 타임캡슐 서비스',
               style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
-          const SizedBox(height: 16),
-          const _ServiceInfoRow(
-              '금융활동과 일상의 추억을 함께 저장', '은행 거래 내역과 함께 사진, 영상 기록'),
-          const _ServiceInfoRow('3개월, 6개월, 1년 등 보관 기간 설정', '원하는 미래 시점에 추억 확인'),
-          const _ServiceInfoRow('단계별 서비스 확장 예정', '카드, 마이데이터 등 연계 예정'),
+          SizedBox(height: 16),
+          _ServiceInfoRow('금융활동과 일상의 추억을 함께 저장', '은행 거래 내역과 함께 사진, 영상 기록'),
+          _ServiceInfoRow('3개월, 6개월, 1년 등 보관 기간 설정', '원하는 미래 시점에 추억 확인'),
+          _ServiceInfoRow('단계별 서비스 확장 예정', '카드, 마이데이터 등 연계 예정'),
         ],
       ),
     );
@@ -472,7 +470,6 @@ class _MyCapsulesSection extends StatelessWidget {
             .map((c) => _MyCapsuleCard(
                   capsule: c['capsule'] as Capsule,
                   contentCount: c['contentCount'] as int,
-                  showOpenButton: c['showOpenButton'] == true,
                   onContentAdded: onContentAdded,
                 ))
             .toList(),
@@ -484,13 +481,11 @@ class _MyCapsulesSection extends StatelessWidget {
 class _MyCapsuleCard extends StatelessWidget {
   final Capsule capsule;
   final int contentCount;
-  final bool showOpenButton;
   final void Function(String capsuleId)? onContentAdded;
 
   const _MyCapsuleCard({
     required this.capsule,
     required this.contentCount,
-    this.showOpenButton = false,
     this.onContentAdded,
   });
 
@@ -501,12 +496,27 @@ class _MyCapsuleCard extends StatelessWidget {
         ? const Color(0xFF4CAF50)
         : const Color(0xFF3B7BFF);
 
+    // 캡슐이 열기 가능한지 확인 (D-Day가 0 이하이고 아직 열리지 않은 경우)
+    final isOpenable = dDay <= 0 && !capsule.isOpened;
+
     return GestureDetector(
       onTap: () async {
-        final result = await Navigator.pushNamed(context, '/detail',
-            arguments: capsule.id);
-        if (result == 'contentAdded' && onContentAdded != null) {
-          onContentAdded!(capsule.id);
+        if (isOpenable) {
+          // 캡슐 열기가 가능한 경우 detail 화면으로 이동
+          final result = await Navigator.pushNamed(context, '/detail',
+              arguments: capsule.id);
+          if (result == 'contentAdded' && onContentAdded != null) {
+            onContentAdded!(capsule.id);
+          }
+        } else {
+          // 캡슐 열기가 불가능한 경우 금융일기 작성 화면으로 이동
+          await Navigator.pushNamed(context, '/capsule_write', arguments: {
+            'capsuleType': capsule.type,
+            'capsuleInfo': {
+              'id': capsule.id,
+              'title': capsule.title,
+            }
+          });
         }
       },
       child: Container(
@@ -565,7 +575,7 @@ class _MyCapsuleCard extends StatelessWidget {
                 ),
               ],
             ),
-            if (showOpenButton)
+            if (isOpenable)
               Padding(
                 padding: const EdgeInsets.only(top: 8.0),
                 child: ElevatedButton(
@@ -583,6 +593,29 @@ class _MyCapsuleCard extends StatelessWidget {
                     minimumSize: const Size(double.infinity, 40),
                   ),
                   child: const Text('타임캡슐 열기'),
+                ),
+              )
+            else
+              Padding(
+                padding: const EdgeInsets.only(top: 8.0),
+                child: Container(
+                  width: double.infinity,
+                  height: 40,
+                  decoration: BoxDecoration(
+                    color: Colors.grey[100],
+                    borderRadius: BorderRadius.circular(8),
+                    border: Border.all(color: Colors.grey[300]!),
+                  ),
+                  child: Center(
+                    child: Text(
+                      '클릭하여 금융일기 작성하기',
+                      style: TextStyle(
+                        color: Colors.grey[600],
+                        fontWeight: FontWeight.w500,
+                        fontSize: 14,
+                      ),
+                    ),
+                  ),
                 ),
               ),
           ],
