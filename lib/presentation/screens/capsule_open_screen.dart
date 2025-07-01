@@ -383,6 +383,29 @@ class _CapsuleOpenScreenState extends State<CapsuleOpenScreen>
         'tags': ['#새해다짐', '#건강', '#성장'],
       },
       {
+        'type': 'finance',
+        'icon': '☕',
+        'title': '건강한 아침 식사',
+        'date': '2024년 5월 8일',
+        'ago': '2개월 전',
+        'content': '고모네 순대국에서 아침 식사를 했다. 농협카드로 결제하니 자동으로 포인트가 적립되었다.',
+        'financeData': [
+          {
+            'category': '아침 식사',
+            'icon': '🥪',
+            'amount': '-8,500원',
+            'change': '농협카드 결제'
+          },
+          {
+            'category': '포인트 적립',
+            'icon': '💳',
+            'amount': '+85P',
+            'change': '1% 적립'
+          },
+        ],
+        'tags': ['#아침식사', '#농협카드', '#포인트적립'],
+      },
+      {
         'type': 'photo',
         'icon': '🌸',
         'title': '벚꽃 여행',
@@ -563,7 +586,7 @@ class _CapsuleOpenScreenState extends State<CapsuleOpenScreen>
         children: [
           if (memory['photos'] != null) _buildPhotoSection(memory['photos']),
           if (memory['financeData'] != null)
-            _buildFinanceSection(memory['financeData']),
+            _buildFinanceSection(memory['financeData'], memory),
           Text(
             memory['content'],
             style: const TextStyle(
@@ -612,7 +635,8 @@ class _CapsuleOpenScreenState extends State<CapsuleOpenScreen>
     );
   }
 
-  Widget _buildFinanceSection(List<Map<String, String>> financeData) {
+  Widget _buildFinanceSection(
+      List<Map<String, String>> financeData, Map<String, dynamic> memory) {
     return Column(
       children: [
         Container(
@@ -626,33 +650,35 @@ class _CapsuleOpenScreenState extends State<CapsuleOpenScreen>
           ),
           child: Column(
             children: [
-              Row(
-                children: [
-                  Container(
-                    padding: const EdgeInsets.all(8),
-                    decoration: BoxDecoration(
-                      color: Colors.white.withOpacity(0.2),
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: const Icon(
-                      Icons.analytics,
-                      color: Colors.white,
-                      size: 20,
-                    ),
-                  ),
-                  const SizedBox(width: 12),
-                  const Expanded(
-                    child: Text(
-                      '금융 성과 요약',
-                      style: TextStyle(
+              // 투자 성과 기록에만 헤더 표시
+              if (memory['title'] == '투자 성과 기록')
+                Row(
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.all(8),
+                      decoration: BoxDecoration(
+                        color: Colors.white.withOpacity(0.2),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: const Icon(
+                        Icons.celebration,
                         color: Colors.white,
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
+                        size: 20,
                       ),
                     ),
-                  ),
-                ],
-              ),
+                    const SizedBox(width: 12),
+                    const Expanded(
+                      child: Text(
+                        '🎯 목표 달성을 축하드려요!',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
               const SizedBox(height: 20),
               ...financeData.map((data) {
                 return Container(
@@ -719,12 +745,12 @@ class _CapsuleOpenScreenState extends State<CapsuleOpenScreen>
             ],
           ),
         ),
-        _buildFinanceRecommendationBanner(),
+        _buildFinanceRecommendationBanner(memory),
       ],
     );
   }
 
-  Widget _buildFinanceRecommendationBanner() {
+  Widget _buildFinanceRecommendationBanner(Map<String, dynamic> memory) {
     return Container(
       margin: const EdgeInsets.only(bottom: 16),
       padding: const EdgeInsets.all(20),
@@ -761,21 +787,25 @@ class _CapsuleOpenScreenState extends State<CapsuleOpenScreen>
                 ),
               ),
               const SizedBox(width: 12),
-              const Expanded(
+              Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      '🎯 목표 달성을 축하드려요!',
-                      style: TextStyle(
+                      memory['title'] == '투자 성과 기록'
+                          ? '🎯 목표 달성을 축하드려요!'
+                          : '💳 고객님께 맞춤 카드 추천!',
+                      style: const TextStyle(
                         color: Colors.white,
                         fontSize: 16,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
                     Text(
-                      '이제 한 단계 더 높은 목표에 도전해보세요',
-                      style: TextStyle(
+                      memory['title'] == '투자 성과 기록'
+                          ? '이제 한 단계 더 높은 목표에 도전해보세요'
+                          : '일상에서 더 많은 혜택을 받아보세요',
+                      style: const TextStyle(
                         color: Colors.white70,
                         fontSize: 13,
                       ),
@@ -814,9 +844,11 @@ class _CapsuleOpenScreenState extends State<CapsuleOpenScreen>
                   ],
                 ),
                 const SizedBox(height: 8),
-                const Text(
-                  '• 포트폴리오 다변화: 해외주식 ETF 투자\n• 세제혜택 활용: ISA 통장 개설\n• 장기투자: 연금저축펀드 추가',
-                  style: TextStyle(
+                Text(
+                  memory['title'] == '투자 성과 기록'
+                      ? '• 포트폴리오 다변화: 해외주식 ETF 투자\n• 세제혜택 활용: ISA 통장 개설\n• 장기투자: 연금저축펀드 추가\n• 안정자산: 국내 우량 채권형 펀드'
+                      : '• 카페/베이커리 최대 5% 적립\n• 대중교통 10% 할인\n• 온라인쇼핑 2% 적립\n• 연회비 첫 해 면제\n• 쌀 구독서비스 제공(쌀/즉석밥등 정기배송)\n• 아침밥 50% 청구할인',
+                  style: const TextStyle(
                     color: Colors.white,
                     fontSize: 13,
                     height: 1.5,
@@ -827,7 +859,11 @@ class _CapsuleOpenScreenState extends State<CapsuleOpenScreen>
                   width: double.infinity,
                   child: ElevatedButton(
                     onPressed: () {
-                      _showPersonalizedAdviceDialog();
+                      if (memory['title'] == '투자 성과 기록') {
+                        _showInvestmentAdviceDialog();
+                      } else {
+                        _showPersonalizedAdviceDialog();
+                      }
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.white,
@@ -837,9 +873,9 @@ class _CapsuleOpenScreenState extends State<CapsuleOpenScreen>
                         borderRadius: BorderRadius.circular(8),
                       ),
                     ),
-                    child: const Text(
-                      '맞춤 상담 받기',
-                      style: TextStyle(
+                    child: Text(
+                      memory['title'] == '투자 성과 기록' ? '맞춤 상담 받기' : '미미카드 신청하기',
+                      style: const TextStyle(
                         fontWeight: FontWeight.bold,
                         fontSize: 14,
                       ),
@@ -854,7 +890,7 @@ class _CapsuleOpenScreenState extends State<CapsuleOpenScreen>
     );
   }
 
-  void _showPersonalizedAdviceDialog() {
+  void _showInvestmentAdviceDialog() {
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -865,13 +901,13 @@ class _CapsuleOpenScreenState extends State<CapsuleOpenScreen>
           title: const Row(
             children: [
               Icon(
-                Icons.person_pin,
+                Icons.trending_up,
                 color: Color(0xFF16A34A),
                 size: 28,
               ),
               SizedBox(width: 8),
               Text(
-                '맞춤 금융 상담',
+                '맞춤 투자 상담',
                 style: TextStyle(
                   fontWeight: FontWeight.bold,
                   color: Color(0xFF1E293B),
@@ -932,6 +968,93 @@ class _CapsuleOpenScreenState extends State<CapsuleOpenScreen>
               ),
               child: const Text(
                 '상담 예약',
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void _showPersonalizedAdviceDialog() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20),
+          ),
+          title: const Row(
+            children: [
+              Icon(
+                Icons.credit_card,
+                color: Color(0xFFEC4899),
+                size: 28,
+              ),
+              SizedBox(width: 8),
+              Text(
+                '농협카드 미미카드',
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  color: Color(0xFF1E293B),
+                ),
+              ),
+            ],
+          ),
+          content: const Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                '고객님께 딱 맞는 카드를 추천드려요!',
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w600,
+                  color: Color(0xFF1E293B),
+                ),
+              ),
+              SizedBox(height: 12),
+              Text(
+                '💳 카페/베이커리 최대 5% 적립\n🚇 대중교통 10% 할인\n🛒 온라인쇼핑 2% 적립\n🎁 연회비 첫 해 면제\n🍚 쌀 구독서비스 제공(쌀/즉석밥등 정기배송)\n🍚 아침밥 50% 청구할인',
+                style: TextStyle(
+                  fontSize: 14,
+                  color: Color(0xFF475569),
+                  height: 1.5,
+                ),
+              ),
+              SizedBox(height: 16),
+              Text(
+                '일상생활에서 더 많은 혜택을 누려보세요!',
+                style: TextStyle(
+                  fontSize: 14,
+                  color: Color(0xFF64748B),
+                ),
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: const Text(
+                '나중에',
+                style: TextStyle(color: Color(0xFF64748B)),
+              ),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+                // 카드 신청 로직
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color(0xFFEC4899),
+                foregroundColor: Colors.white,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8),
+                ),
+              ),
+              child: const Text(
+                '카드 신청',
                 style: TextStyle(fontWeight: FontWeight.bold),
               ),
             ),
@@ -1128,16 +1251,6 @@ class _CapsuleOpenScreenState extends State<CapsuleOpenScreen>
           child: Row(
             children: [
               _buildRecommendationCard(
-                icon: '🚀',
-                title: 'NH투자증권 ETF',
-                subtitle: '성장형 투자자',
-                description: '꾸준한 투자 성과를 보여주시는 고객님께 추천',
-                expectedReturn: '연 8-12%',
-                riskLevel: '중위험',
-                color: const Color(0xFF3B82F6),
-              ),
-              const SizedBox(width: 16),
-              _buildRecommendationCard(
                 icon: '🎯',
                 title: 'NH 목돈마련 적금',
                 subtitle: '안정형 저축자',
@@ -1155,6 +1268,26 @@ class _CapsuleOpenScreenState extends State<CapsuleOpenScreen>
                 expectedReturn: '연 2.8%',
                 riskLevel: '안전',
                 color: const Color(0xFF8B5CF6),
+              ),
+              const SizedBox(width: 16),
+              _buildRecommendationCard(
+                icon: '🚀',
+                title: 'NH투자증권 ETF',
+                subtitle: '성장형 투자자',
+                description: '꾸준한 투자 성과를 보여주시는 고객님께 추천',
+                expectedReturn: '연 8-12%',
+                riskLevel: '중위험',
+                color: const Color(0xFF3B82F6),
+              ),
+              const SizedBox(width: 16),
+              _buildRecommendationCard(
+                icon: '💳',
+                title: '농협카드 미미카드',
+                subtitle: '스마트 소비형',
+                description: '일상 소비에서 포인트 적립과 혜택을 원하는 고객님께 추천',
+                expectedReturn: '최대 2% 적립',
+                riskLevel: '혜택',
+                color: const Color(0xFFEC4899),
               ),
             ],
           ),
@@ -1386,9 +1519,76 @@ class _CapsuleOpenScreenState extends State<CapsuleOpenScreen>
             children: [
               Text(description),
               const SizedBox(height: 16),
-              const Text(
-                '상담을 원하시면 NH농협은행 고객센터로 연락주세요.',
-                style: TextStyle(
+              if (title.contains('미미카드'))
+                Container(
+                  padding: const EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFFCE7F3),
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(
+                        color: const Color(0xFFEC4899).withOpacity(0.3)),
+                  ),
+                  child: const Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        '🎉 특별 혜택',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                          color: Color(0xFFBE185D),
+                        ),
+                      ),
+                      SizedBox(height: 8),
+                      Text(
+                        '• 카페/베이커리 최대 5% 적립\n• 대중교통 10% 할인\n• 온라인쇼핑 2% 적립\n• 연회비 첫 해 면제\n• 쌀 구독서비스 제공(쌀/즉석밥등 정기배송)\n• 아침밥 50% 청구할인',
+                        style: TextStyle(
+                          fontSize: 14,
+                          color: Color(0xFF9D174D),
+                          height: 1.4,
+                        ),
+                      ),
+                    ],
+                  ),
+                )
+              else
+                Container(
+                  padding: const EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFF0F9FF),
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(
+                        color: const Color(0xFF0EA5E9).withOpacity(0.3)),
+                  ),
+                  child: const Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        '💡 투자 포인트',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                          color: Color(0xFF0284C7),
+                        ),
+                      ),
+                      SizedBox(height: 8),
+                      Text(
+                        '• 장기 투자 시 세제 혜택\n• 분산 투자 효과\n• 낮은 운용 보수\n• 전문가 운용',
+                        style: TextStyle(
+                          fontSize: 14,
+                          color: Color(0xFF0369A1),
+                          height: 1.4,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              const SizedBox(height: 16),
+              Text(
+                title.contains('미미카드')
+                    ? '카드 신청 및 자세한 혜택은 농협카드 고객센터로 연락주세요.'
+                    : '상담을 원하시면 NH농협은행 고객센터로 연락주세요.',
+                style: const TextStyle(
                   fontSize: 14,
                   color: Color(0xFF64748B),
                 ),
@@ -1406,10 +1606,12 @@ class _CapsuleOpenScreenState extends State<CapsuleOpenScreen>
                 // 상담 신청 로직 추가 가능
               },
               style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFF48CC6C),
+                backgroundColor: title.contains('미미카드')
+                    ? const Color(0xFFEC4899)
+                    : const Color(0xFF48CC6C),
                 foregroundColor: Colors.white,
               ),
-              child: const Text('상담 신청'),
+              child: Text(title.contains('미미카드') ? '카드 신청' : '상담 신청'),
             ),
           ],
         );
