@@ -407,24 +407,6 @@ class _ServiceInfoSection extends StatelessWidget {
           const SizedBox(height: 16),
           const _ServiceInfoRow(
               '금융활동과 일상의 추억을 함께 저장', '은행 거래 내역과 함께 사진, 영상 기록'),
-          Center(
-            child: Container(
-              padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
-              decoration: BoxDecoration(
-                color: const Color(0xFFFFF8E1),
-                borderRadius: BorderRadius.circular(8),
-              ),
-              child: const Text(
-                '7일 연속 타임캡슐 작성 시\n200P 추가적립',
-                style: TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w600,
-                  color: Color(0xFF2E7D32),
-                ),
-                textAlign: TextAlign.center,
-              ),
-            ),
-          ),
           const _ServiceInfoRow('3개월, 6개월, 1년 등 보관 기간 설정', '원하는 미래 시점에 추억 확인'),
           const _ServiceInfoRow('단계별 서비스 확장 예정', '카드, 마이데이터 등 연계 예정'),
         ],
