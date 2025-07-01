@@ -617,12 +617,12 @@ class _BottomButtons extends StatelessWidget {
                             createdAt:
                                 capsuleInfo['createdAt'] ?? DateTime.now(),
                             openDate: capsuleInfo['openDate'] ??
-                                DateTime(2025, 10, 1),
+                                DateTime(2025, 10, 31),
                             points: capsuleInfo['points'] ?? 0,
                             isOpened: capsuleInfo['isOpened'] ?? false,
                           ),
                           'contentCount': 1,
-                          'showOpenButton': true,
+                          'showOpenButton': false,
                         };
 
                         // CapsuleCreateScreen으로 돌아가서 결과 전달

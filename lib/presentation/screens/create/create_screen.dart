@@ -18,7 +18,7 @@ class _CreateScreenState extends State<CreateScreen> {
   final _contentController = TextEditingController();
 
   CapsuleType _selectedType = CapsuleType.personal;
-  DateTime _selectedDate = DateTime(2025, 10, 1);
+  DateTime _selectedDate = DateTime(2025, 10, 31);
 
   @override
   void dispose() {
